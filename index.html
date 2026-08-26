@@ -3,518 +3,924 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>F1 Immersive</title>
 
 <style>
-html,body {
-    margin:0;
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:#050505;
-    font-family:Arial,sans-serif;
-    color:white;
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050505;
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 #menu {
-    position:absolute;
-    z-index:10;
-    inset:0;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:radial-gradient(circle,#252525,#050505);
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #292929 0%,
+            #090909 65%,
+            #000000 100%
+        );
+
+    z-index: 100;
 }
 
 .panel {
-    text-align:center;
-    padding:35px;
-    border-radius:25px;
-    background:rgba(20,20,20,.9);
-    border:1px solid #555;
+
+    width: min(90%, 500px);
+
+    padding: 35px;
+
+    text-align: center;
+
+    border-radius: 24px;
+
+    background: rgba(20,20,20,.92);
+
+    border: 1px solid #555;
+
+    box-shadow:
+        0 20px 80px rgba(0,0,0,.8);
 }
 
-h1 {
-    font-size:42px;
-    margin:0 0 10px;
+.logo {
+    font-size: 46px;
+    font-weight: 900;
+    margin-bottom: 10px;
 }
 
-p {
-    color:#bbb;
+.subtitle {
+    color: #aaa;
+    margin-bottom: 30px;
 }
 
 button {
-    background:#e10600;
-    color:white;
-    border:0;
-    border-radius:12px;
-    padding:16px 25px;
-    margin:8px;
-    font-size:18px;
-    font-weight:bold;
+
+    display: inline-block;
+
+    border: none;
+
+    border-radius: 12px;
+
+    padding: 16px 25px;
+
+    margin: 6px;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    color: white;
+
+    background: #e10600;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color: transparent;
+}
+
+button.secondary {
+    background: #333;
 }
 
 button:active {
-    transform:scale(.97);
+    transform: scale(.96);
 }
 
-#info {
-    position:absolute;
-    z-index:5;
-    top:20px;
-    left:20px;
-    padding:12px 16px;
-    border-radius:12px;
-    background:rgba(0,0,0,.7);
-    display:none;
+#experience {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: none;
+}
+
+canvas {
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+#hud {
+
+    position: fixed;
+
+    top: 20px;
+    left: 20px;
+
+    padding: 14px 18px;
+
+    background: rgba(0,0,0,.75);
+
+    border-radius: 12px;
+
+    border: 1px solid #444;
+
+    display: none;
+
+    z-index: 20;
+}
+
+#hud strong {
+    font-size: 17px;
+}
+
+#hud small {
+    display: block;
+    color: #aaa;
+    margin-top: 4px;
 }
 
 #f1tv {
-    position:absolute;
-    z-index:6;
-    right:20px;
-    top:20px;
-    display:none;
-    background:#e10600;
-    color:white;
-    border:0;
-    border-radius:10px;
-    padding:12px 18px;
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    display: none;
+
+    z-index: 20;
+
+    background: #e10600;
 }
+
+#message {
+
+    margin-top: 15px;
+
+    color: #8f8;
+
+    font-size: 14px;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<div id="menu">
-    <div class="panel">
-        <h1>🏁 F1 IMMERSIVE</h1>
-        <p>Formula 1 in 3D — Meta Quest 3</p>
+<!-- START MENU -->
 
-        <button onclick="startExperience()">
+<div id="menu">
+
+    <div class="panel">
+
+        <div class="logo">
+            🏁 F1 IMMERSIVE
+        </div>
+
+        <div class="subtitle">
+            Formula 1 • 3D Race Experience
+        </div>
+
+        <button id="startButton">
             START IMMERSIVE
         </button>
 
-        <button onclick="openF1TV()">
+        <button id="tvButton" class="secondary">
             OPEN F1 TV
         </button>
 
-        <p style="font-size:13px">
-            No F1 Immersive account required
-        </p>
+        <div id="message"></div>
+
     </div>
+
 </div>
 
-<div id="info">
-    🏁 F1 IMMERSIVE<br>
-    <small>3D Race Track</small>
+
+<!-- EXPERIENCE -->
+
+<div id="experience">
+
+    <canvas id="canvas"></canvas>
+
 </div>
 
-<button id="f1tv" onclick="openF1TV()">
+
+<div id="hud">
+
+    <strong>🏁 F1 IMMERSIVE</strong>
+
+    <small>
+        Meta Quest 3 • 3D Track
+    </small>
+
+</div>
+
+
+<button id="f1tv">
     F1 TV
 </button>
 
-<script type="module">
 
-import * as THREE from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+<script>
 
-import { ARButton } from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/webxr/ARButton.js';
+/*
+==========================================================
+F1 IMMERSIVE
+Simple browser version
+Works on iPhone / Safari / Quest Browser
+==========================================================
+*/
 
-let scene;
-let camera;
-let renderer;
-let track;
-let cars = [];
-let clock;
-let immersive = false;
 
-init();
+const menu =
+    document.getElementById("menu");
 
-function init() {
+const experience =
+    document.getElementById("experience");
 
-    scene = new THREE.Scene();
+const canvas =
+    document.getElementById("canvas");
 
-    camera = new THREE.PerspectiveCamera(
-        60,
-        window.innerWidth / window.innerHeight,
-        0.01,
-        100
+const ctx =
+    canvas.getContext("2d");
+
+const startButton =
+    document.getElementById("startButton");
+
+const tvButton =
+    document.getElementById("tvButton");
+
+const f1tv =
+    document.getElementById("f1tv");
+
+const hud =
+    document.getElementById("hud");
+
+const message =
+    document.getElementById("message");
+
+
+/*
+----------------------------------------------------------
+Canvas
+----------------------------------------------------------
+*/
+
+function resizeCanvas() {
+
+    canvas.width =
+        window.innerWidth *
+        window.devicePixelRatio;
+
+    canvas.height =
+        window.innerHeight *
+        window.devicePixelRatio;
+
+    ctx.setTransform(
+        window.devicePixelRatio,
+        0,
+        0,
+        window.devicePixelRatio,
+        0,
+        0
+    );
+}
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+
+/*
+----------------------------------------------------------
+F1 cars
+----------------------------------------------------------
+*/
+
+const cars = [
+
+    {
+        position: 0,
+        speed: .00055,
+        color: "#e10600",
+        number: "1"
+    },
+
+    {
+        position: .18,
+        speed: .00050,
+        color: "#00aaff",
+        number: "2"
+    },
+
+    {
+        position: .36,
+        speed: .00048,
+        color: "#ffff00",
+        number: "3"
+    },
+
+    {
+        position: .55,
+        speed: .00046,
+        color: "#00ff66",
+        number: "4"
+    },
+
+    {
+        position: .73,
+        speed: .00044,
+        color: "#ffffff",
+        number: "5"
+    },
+
+    {
+        position: .88,
+        speed: .00042,
+        color: "#ff8800",
+        number: "6"
+    }
+
+];
+
+
+/*
+----------------------------------------------------------
+Track
+----------------------------------------------------------
+*/
+
+function drawTrack() {
+
+    const w =
+        window.innerWidth;
+
+    const h =
+        window.innerHeight;
+
+    const cx =
+        w / 2;
+
+    const cy =
+        h / 2 + 30;
+
+    const scale =
+        Math.min(w,h) / 900;
+
+
+    ctx.save();
+
+    ctx.translate(cx,cy);
+
+    ctx.scale(scale,scale);
+
+
+    /*
+    Shadow
+    */
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        0,
+        40,
+        360,
+        230,
+        0,
+        0,
+        Math.PI * 2
     );
 
-    camera.position.set(0,4,6);
+    ctx.fillStyle =
+        "rgba(0,0,0,.5)";
 
-    renderer = new THREE.WebGLRenderer({
-        antialias:true,
-        alpha:true
-    });
+    ctx.fill();
 
-    renderer.setPixelRatio(window.devicePixelRatio);
-    renderer.setSize(
+
+    /*
+    Grass
+    */
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        0,
+        0,
+        350,
+        220,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "#163d1c";
+
+    ctx.fill();
+
+
+    /*
+    Outer track
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(-280,-80);
+
+    ctx.bezierCurveTo(
+        -250,-250,
+        20,-280,
+        220,-180
+    );
+
+    ctx.bezierCurveTo(
+        380,-100,
+        350,130,
+        160,200
+    );
+
+    ctx.bezierCurveTo(
+        -40,270,
+        -300,190,
+        -290,30
+    );
+
+    ctx.bezierCurveTo(
+        -285,-30,
+        -220,-45,
+        -160,-20
+    );
+
+    ctx.bezierCurveTo(
+        -80,15,
+        -10,60,
+        60,25
+    );
+
+    ctx.bezierCurveTo(
+        130,-10,
+        145,-80,
+        85,-115
+    );
+
+    ctx.bezierCurveTo(
+        0,-165,
+        -100,-145,
+        -140,-70
+    );
+
+    ctx.lineWidth = 52;
+
+    ctx.lineCap =
+        "round";
+
+    ctx.strokeStyle =
+        "#333";
+
+    ctx.stroke();
+
+
+    /*
+    Track surface
+    */
+
+    ctx.beginPath();
+
+    ctx.moveTo(-280,-80);
+
+    ctx.bezierCurveTo(
+        -250,-250,
+        20,-280,
+        220,-180
+    );
+
+    ctx.bezierCurveTo(
+        380,-100,
+        350,130,
+        160,200
+    );
+
+    ctx.bezierCurveTo(
+        -40,270,
+        -300,190,
+        -290,30
+    );
+
+    ctx.bezierCurveTo(
+        -285,-30,
+        -220,-45,
+        -160,-20
+    );
+
+    ctx.bezierCurveTo(
+        -80,15,
+        -10,60,
+        60,25
+    );
+
+    ctx.bezierCurveTo(
+        130,-10,
+        145,-80,
+        85,-115
+    );
+
+    ctx.bezierCurveTo(
+        0,-165,
+        -100,-145,
+        -140,-70
+    );
+
+    ctx.lineWidth = 38;
+
+    ctx.strokeStyle =
+        "#171717";
+
+    ctx.stroke();
+
+
+    /*
+    Kerbs
+    */
+
+    ctx.lineWidth = 5;
+
+    ctx.setLineDash([
+        8,
+        8
+    ]);
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+    ctx.stroke();
+
+
+    ctx.setLineDash([]);
+
+
+    /*
+    Start finish
+    */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.fillRect(
+        -190,
+        -100,
+        6,
+        55
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/*
+----------------------------------------------------------
+Car position
+----------------------------------------------------------
+*/
+
+function getTrackPosition(t) {
+
+    const angle =
+        t * Math.PI * 2;
+
+
+    const x =
+        Math.sin(angle) *
+        240;
+
+
+    const y =
+        Math.cos(angle) *
+        130;
+
+
+    return {
+        x,
+        y
+    };
+
+}
+
+
+/*
+----------------------------------------------------------
+Draw car
+----------------------------------------------------------
+*/
+
+function drawCar(car) {
+
+    const w =
+        window.innerWidth;
+
+    const h =
+        window.innerHeight;
+
+    const scale =
+        Math.min(w,h) / 900;
+
+    const cx =
+        w / 2;
+
+    const cy =
+        h / 2 + 30;
+
+
+    const pos =
+        getTrackPosition(
+            car.position
+        );
+
+
+    const x =
+        cx + pos.x * scale;
+
+    const y =
+        cy + pos.y * scale;
+
+
+    ctx.save();
+
+
+    ctx.translate(
+        x,
+        y
+    );
+
+
+    ctx.scale(
+        scale,
+        scale
+    );
+
+
+    /*
+    Shadow
+    */
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.6)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        0,
+        7,
+        16,
+        7,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+    Car
+    */
+
+    ctx.fillStyle =
+        car.color;
+
+    ctx.fillRect(
+        -13,
+        -5,
+        26,
+        10
+    );
+
+
+    /*
+    Nose
+    */
+
+    ctx.fillRect(
+        10,
+        -2,
+        12,
+        4
+    );
+
+
+    /*
+    Number
+    */
+
+    ctx.fillStyle =
+        "#000";
+
+    ctx.font =
+        "bold 8px Arial";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        car.number,
+        0,
+        3
+    );
+
+
+    ctx.restore();
+
+}
+
+
+/*
+----------------------------------------------------------
+Animation
+----------------------------------------------------------
+*/
+
+let running = false;
+
+function animate() {
+
+    if (!running) {
+        return;
+    }
+
+
+    ctx.clearRect(
+        0,
+        0,
         window.innerWidth,
         window.innerHeight
     );
 
-    renderer.xr.enabled = true;
-
-    document.body.appendChild(renderer.domElement);
-
-    const light = new THREE.HemisphereLight(
-        0xffffff,
-        0x444444,
-        3
-    );
-
-    scene.add(light);
-
-    const directional = new THREE.DirectionalLight(
-        0xffffff,
-        3
-    );
-
-    directional.position.set(5,10,5);
-    scene.add(directional);
-
-    clock = new THREE.Clock();
-
-    createTrack();
-
-    createCars();
-
-    window.addEventListener(
-        'resize',
-        onResize
-    );
-
-    animate();
-}
-
-function createTrack() {
-
-    track = new THREE.Group();
-
-    const roadShape = new THREE.Shape();
-
-    roadShape.moveTo(-4,-1);
-
-    roadShape.bezierCurveTo(
-        -4,-4,
-         2,-5,
-         5,-2
-    );
-
-    roadShape.bezierCurveTo(
-         7,0,
-         5,4,
-         1,4
-    );
-
-    roadShape.bezierCurveTo(
-        -3,5,
-        -6,2,
-        -5,0
-    );
-
-    roadShape.bezierCurveTo(
-        -4,-2,
-        -2,-1,
-         0,0
-    );
-
-    roadShape.bezierCurveTo(
-         2,1,
-         3,0,
-         2,-1
-    );
-
-    roadShape.bezierCurveTo(
-         1,-2,
-        -1,-2,
-        -2,-1
-    );
-
-    const geometry =
-        new THREE.ExtrudeGeometry(
-            roadShape,
-            {
-                depth:.08,
-                bevelEnabled:false
-            }
-        );
-
-    const material =
-        new THREE.MeshStandardMaterial({
-            color:0x202020
-        });
-
-    const road =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
-
-    road.rotation.x = -Math.PI/2;
-
-    track.add(road);
 
     /*
-       Start/finish line
+    Background
     */
 
-    const lineGeometry =
-        new THREE.BoxGeometry(
-            .15,
-            .01,
-            1.5
-        );
-
-    const lineMaterial =
-        new THREE.MeshBasicMaterial({
-            color:0xffffff
-        });
-
-    const finish =
-        new THREE.Mesh(
-            lineGeometry,
-            lineMaterial
-        );
-
-    finish.position.set(
-        -2,
-        .07,
-        0
-    );
-
-    track.add(finish);
-
-    /*
-       Green grass/base
-    */
-
-    const baseGeometry =
-        new THREE.CylinderGeometry(
-            7,
-            7,
-            .12,
-            64
-        );
-
-    const baseMaterial =
-        new THREE.MeshStandardMaterial({
-            color:0x16351a
-        });
-
-    const base =
-        new THREE.Mesh(
-            baseGeometry,
-            baseMaterial
-        );
-
-    base.position.y = -.08;
-
-    track.add(base);
-
-    /*
-       Scale for comfortable
-       Quest viewing
-    */
-
-    track.scale.set(
-        .35,
-        .35,
-        .35
-    );
-
-    track.position.set(
-        0,
-        -1.2,
-        -2
-    );
-
-    scene.add(track);
-}
-
-function createCars() {
-
-    const colors = [
-        0xe10600,
-        0x1e90ff,
-        0xffff00,
-        0x00ff66,
-        0xffffff
-    ];
-
-    for(let i=0;i<5;i++) {
-
-        const car =
-            new THREE.Group();
-
-        const body =
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .18,
-                    .05,
-                    .45
-                ),
-                new THREE.MeshStandardMaterial({
-                    color:colors[i]
-                })
-            );
-
-        car.add(body);
-
-        const nose =
-            new THREE.Mesh(
-                new THREE.BoxGeometry(
-                    .08,
-                    .03,
-                    .2
-                ),
-                new THREE.MeshStandardMaterial({
-                    color:colors[i]
-                })
-            );
-
-        nose.position.z = -.3;
-
-        car.add(nose);
-
-        car.position.y = .12;
-
-        track.add(car);
-
-        cars.push({
-            mesh:car,
-            progress:i * .15
-        });
-    }
-}
-
-function updateCars() {
-
-    cars.forEach((car,i) => {
-
-        car.progress +=
-            .0008 + i*.00005;
-
-        const a =
-            car.progress *
-            Math.PI *
-            2;
-
-        const x =
-            Math.sin(a) *
-            1.7;
-
-        const z =
-            Math.cos(a) *
-            1.25;
-
-        car.mesh.position.x =
-            x;
-
-        car.mesh.position.z =
-            z;
-
-        car.mesh.rotation.y =
-            -a;
-
-    });
-}
-
-function animate() {
-
-    renderer.setAnimationLoop(
-        render
-    );
-}
-
-function render() {
-
-    updateCars();
-
-    renderer.render(
-        scene,
-        camera
-    );
-}
-
-async function startExperience() {
-
-    document.getElementById(
-        'menu'
-    ).style.display='none';
-
-    document.getElementById(
-        'info'
-    ).style.display='block';
-
-    document.getElementById(
-        'f1tv'
-    ).style.display='block';
-
-    /*
-       Try Meta Quest immersive AR
-    */
-
-    if(
-        navigator.xr &&
-        await navigator.xr.isSessionSupported(
-            'immersive-ar'
-        )
-    ) {
-
-        const button =
-            ARButton.createButton(
-                renderer,
-                {
-                    requiredFeatures:[
-                        'local-floor'
-                    ]
-                }
-            );
-
-        document.body.appendChild(
-            button
-        );
-
-        button.click();
-
-    } else {
-
-        /*
-           Normal browser / VR preview
-        */
-
-        camera.position.set(
+    const gradient =
+        ctx.createLinearGradient(
             0,
-            3,
-            6
+            0,
+            0,
+            window.innerHeight
         );
 
-    }
+    gradient.addColorStop(
+        0,
+        "#101015"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#020202"
+    );
+
+    ctx.fillStyle =
+        gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        window.innerWidth,
+        window.innerHeight
+    );
+
+
+    drawTrack();
+
+
+    /*
+    Move cars
+    */
+
+    cars.forEach(
+        car => {
+
+            car.position +=
+                car.speed;
+
+            if(
+                car.position >= 1
+            ) {
+
+                car.position -= 1;
+
+            }
+
+            drawCar(car);
+
+        }
+    );
+
+
+    /*
+    Title
+    */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "bold 22px Arial";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillText(
+        "F1 IMMERSIVE",
+        window.innerWidth / 2,
+        45
+    );
+
+
+    requestAnimationFrame(
+        animate
+    );
+
 }
+
+
+/*
+----------------------------------------------------------
+START BUTTON
+----------------------------------------------------------
+*/
+
+startButton.addEventListener(
+    "click",
+    function() {
+
+        menu.style.display =
+            "none";
+
+        experience.style.display =
+            "block";
+
+        hud.style.display =
+            "block";
+
+        f1tv.style.display =
+            "block";
+
+        running = true;
+
+        animate();
+
+    }
+);
+
+
+/*
+----------------------------------------------------------
+F1 TV
+----------------------------------------------------------
+*/
 
 function openF1TV() {
 
     window.location.href =
-        'https://f1tv.formula1.com/';
+        "https://f1tv.formula1.com/";
+
 }
 
-function onResize() {
+tvButton.addEventListener(
+    "click",
+    openF1TV
+);
 
-    camera.aspect =
-        window.innerWidth /
-        window.innerHeight;
+f1tv.addEventListener(
+    "click",
+    openF1TV
+);
 
-    camera.updateProjectionMatrix();
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-}
+/*
+----------------------------------------------------------
+Page loaded
+----------------------------------------------------------
+*/
+
+message.textContent =
+    "Ready — Quest 3 / iPhone compatible preview";
 
 </script>
 
