@@ -1,1 +1,522 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>F1 Immersive</title>
 
+<style>
+html,body {
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#050505;
+    font-family:Arial,sans-serif;
+    color:white;
+}
+
+#menu {
+    position:absolute;
+    z-index:10;
+    inset:0;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:radial-gradient(circle,#252525,#050505);
+}
+
+.panel {
+    text-align:center;
+    padding:35px;
+    border-radius:25px;
+    background:rgba(20,20,20,.9);
+    border:1px solid #555;
+}
+
+h1 {
+    font-size:42px;
+    margin:0 0 10px;
+}
+
+p {
+    color:#bbb;
+}
+
+button {
+    background:#e10600;
+    color:white;
+    border:0;
+    border-radius:12px;
+    padding:16px 25px;
+    margin:8px;
+    font-size:18px;
+    font-weight:bold;
+}
+
+button:active {
+    transform:scale(.97);
+}
+
+#info {
+    position:absolute;
+    z-index:5;
+    top:20px;
+    left:20px;
+    padding:12px 16px;
+    border-radius:12px;
+    background:rgba(0,0,0,.7);
+    display:none;
+}
+
+#f1tv {
+    position:absolute;
+    z-index:6;
+    right:20px;
+    top:20px;
+    display:none;
+    background:#e10600;
+    color:white;
+    border:0;
+    border-radius:10px;
+    padding:12px 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+    <div class="panel">
+        <h1>🏁 F1 IMMERSIVE</h1>
+        <p>Formula 1 in 3D — Meta Quest 3</p>
+
+        <button onclick="startExperience()">
+            START IMMERSIVE
+        </button>
+
+        <button onclick="openF1TV()">
+            OPEN F1 TV
+        </button>
+
+        <p style="font-size:13px">
+            No F1 Immersive account required
+        </p>
+    </div>
+</div>
+
+<div id="info">
+    🏁 F1 IMMERSIVE<br>
+    <small>3D Race Track</small>
+</div>
+
+<button id="f1tv" onclick="openF1TV()">
+    F1 TV
+</button>
+
+<script type="module">
+
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+import { ARButton } from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/webxr/ARButton.js';
+
+let scene;
+let camera;
+let renderer;
+let track;
+let cars = [];
+let clock;
+let immersive = false;
+
+init();
+
+function init() {
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.01,
+        100
+    );
+
+    camera.position.set(0,4,6);
+
+    renderer = new THREE.WebGLRenderer({
+        antialias:true,
+        alpha:true
+    });
+
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+
+    renderer.xr.enabled = true;
+
+    document.body.appendChild(renderer.domElement);
+
+    const light = new THREE.HemisphereLight(
+        0xffffff,
+        0x444444,
+        3
+    );
+
+    scene.add(light);
+
+    const directional = new THREE.DirectionalLight(
+        0xffffff,
+        3
+    );
+
+    directional.position.set(5,10,5);
+    scene.add(directional);
+
+    clock = new THREE.Clock();
+
+    createTrack();
+
+    createCars();
+
+    window.addEventListener(
+        'resize',
+        onResize
+    );
+
+    animate();
+}
+
+function createTrack() {
+
+    track = new THREE.Group();
+
+    const roadShape = new THREE.Shape();
+
+    roadShape.moveTo(-4,-1);
+
+    roadShape.bezierCurveTo(
+        -4,-4,
+         2,-5,
+         5,-2
+    );
+
+    roadShape.bezierCurveTo(
+         7,0,
+         5,4,
+         1,4
+    );
+
+    roadShape.bezierCurveTo(
+        -3,5,
+        -6,2,
+        -5,0
+    );
+
+    roadShape.bezierCurveTo(
+        -4,-2,
+        -2,-1,
+         0,0
+    );
+
+    roadShape.bezierCurveTo(
+         2,1,
+         3,0,
+         2,-1
+    );
+
+    roadShape.bezierCurveTo(
+         1,-2,
+        -1,-2,
+        -2,-1
+    );
+
+    const geometry =
+        new THREE.ExtrudeGeometry(
+            roadShape,
+            {
+                depth:.08,
+                bevelEnabled:false
+            }
+        );
+
+    const material =
+        new THREE.MeshStandardMaterial({
+            color:0x202020
+        });
+
+    const road =
+        new THREE.Mesh(
+            geometry,
+            material
+        );
+
+    road.rotation.x = -Math.PI/2;
+
+    track.add(road);
+
+    /*
+       Start/finish line
+    */
+
+    const lineGeometry =
+        new THREE.BoxGeometry(
+            .15,
+            .01,
+            1.5
+        );
+
+    const lineMaterial =
+        new THREE.MeshBasicMaterial({
+            color:0xffffff
+        });
+
+    const finish =
+        new THREE.Mesh(
+            lineGeometry,
+            lineMaterial
+        );
+
+    finish.position.set(
+        -2,
+        .07,
+        0
+    );
+
+    track.add(finish);
+
+    /*
+       Green grass/base
+    */
+
+    const baseGeometry =
+        new THREE.CylinderGeometry(
+            7,
+            7,
+            .12,
+            64
+        );
+
+    const baseMaterial =
+        new THREE.MeshStandardMaterial({
+            color:0x16351a
+        });
+
+    const base =
+        new THREE.Mesh(
+            baseGeometry,
+            baseMaterial
+        );
+
+    base.position.y = -.08;
+
+    track.add(base);
+
+    /*
+       Scale for comfortable
+       Quest viewing
+    */
+
+    track.scale.set(
+        .35,
+        .35,
+        .35
+    );
+
+    track.position.set(
+        0,
+        -1.2,
+        -2
+    );
+
+    scene.add(track);
+}
+
+function createCars() {
+
+    const colors = [
+        0xe10600,
+        0x1e90ff,
+        0xffff00,
+        0x00ff66,
+        0xffffff
+    ];
+
+    for(let i=0;i<5;i++) {
+
+        const car =
+            new THREE.Group();
+
+        const body =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    .18,
+                    .05,
+                    .45
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:colors[i]
+                })
+            );
+
+        car.add(body);
+
+        const nose =
+            new THREE.Mesh(
+                new THREE.BoxGeometry(
+                    .08,
+                    .03,
+                    .2
+                ),
+                new THREE.MeshStandardMaterial({
+                    color:colors[i]
+                })
+            );
+
+        nose.position.z = -.3;
+
+        car.add(nose);
+
+        car.position.y = .12;
+
+        track.add(car);
+
+        cars.push({
+            mesh:car,
+            progress:i * .15
+        });
+    }
+}
+
+function updateCars() {
+
+    cars.forEach((car,i) => {
+
+        car.progress +=
+            .0008 + i*.00005;
+
+        const a =
+            car.progress *
+            Math.PI *
+            2;
+
+        const x =
+            Math.sin(a) *
+            1.7;
+
+        const z =
+            Math.cos(a) *
+            1.25;
+
+        car.mesh.position.x =
+            x;
+
+        car.mesh.position.z =
+            z;
+
+        car.mesh.rotation.y =
+            -a;
+
+    });
+}
+
+function animate() {
+
+    renderer.setAnimationLoop(
+        render
+    );
+}
+
+function render() {
+
+    updateCars();
+
+    renderer.render(
+        scene,
+        camera
+    );
+}
+
+async function startExperience() {
+
+    document.getElementById(
+        'menu'
+    ).style.display='none';
+
+    document.getElementById(
+        'info'
+    ).style.display='block';
+
+    document.getElementById(
+        'f1tv'
+    ).style.display='block';
+
+    /*
+       Try Meta Quest immersive AR
+    */
+
+    if(
+        navigator.xr &&
+        await navigator.xr.isSessionSupported(
+            'immersive-ar'
+        )
+    ) {
+
+        const button =
+            ARButton.createButton(
+                renderer,
+                {
+                    requiredFeatures:[
+                        'local-floor'
+                    ]
+                }
+            );
+
+        document.body.appendChild(
+            button
+        );
+
+        button.click();
+
+    } else {
+
+        /*
+           Normal browser / VR preview
+        */
+
+        camera.position.set(
+            0,
+            3,
+            6
+        );
+
+    }
+}
+
+function openF1TV() {
+
+    window.location.href =
+        'https://f1tv.formula1.com/';
+}
+
+function onResize() {
+
+    camera.aspect =
+        window.innerWidth /
+        window.innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
+}
+
+</script>
+
+</body>
+</html>
