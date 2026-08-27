@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>F1 Immersive WebXR</title>
+<title>F1 Immersive</title>
 
 <style>
 html,body{
@@ -12,47 +12,52 @@ html,body{
     height:100%;
     overflow:hidden;
     background:#050505;
-    font-family:Arial,sans-serif;
     color:white;
+    font-family:Arial,sans-serif;
 }
 
 #menu{
     position:fixed;
     inset:0;
+    z-index:20;
     display:flex;
-    align-items:center;
     justify-content:center;
-    z-index:10;
+    align-items:center;
     background:radial-gradient(circle,#292929,#000);
 }
 
 .panel{
-    width:min(90%,500px);
+    width:min(90%,520px);
     padding:35px;
     text-align:center;
-    background:rgba(15,15,15,.94);
+    background:rgba(15,15,15,.95);
     border:1px solid #555;
-    border-radius:24px;
+    border-radius:25px;
 }
 
 h1{
-    font-size:42px;
+    font-size:44px;
     margin:0 0 10px;
 }
 
-p{
+.subtitle{
     color:#aaa;
+    margin-bottom:25px;
 }
 
 button{
     border:0;
     border-radius:12px;
     padding:16px 24px;
-    margin:8px;
+    margin:7px;
     background:#e10600;
     color:white;
     font-size:17px;
     font-weight:bold;
+}
+
+button.secondary{
+    background:#333;
 }
 
 #status{
@@ -61,10 +66,9 @@ button{
     color:#8f8;
 }
 
-#fallback{
-    display:none;
-    margin-top:15px;
-    color:#ffcc66;
+#canvas{
+    position:fixed;
+    inset:0;
 }
 </style>
 </head>
@@ -72,59 +76,73 @@ button{
 <body>
 
 <div id="menu">
+
     <div class="panel">
 
         <h1>🏁 F1 IMMERSIVE</h1>
 
-        <p>
-            Meta Quest 3 WebXR test
-        </p>
+        <div class="subtitle">
+            Formula 1 Mixed Reality<br>
+            Meta Quest 3
+        </div>
 
         <button id="start">
             START IMMERSIVE
         </button>
 
-        <div id="status">
-            Checking WebXR...
-        </div>
+        <button id="tv">
+            F1 TV
+        </button>
 
-        <div id="fallback">
-            Deze browser ondersteunt immersive AR niet.
+        <div id="status">
+            WebXR controleren...
         </div>
 
     </div>
+
 </div>
+
+<canvas id="canvas"></canvas>
+
 
 <script type="module">
 
 import * as THREE from
 "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
-import { ARButton } from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/webxr/ARButton.js";
+
+/* =====================================================
+   BASIS
+===================================================== */
+
+const canvas =
+document.getElementById("canvas");
+
+const menu =
+document.getElementById("menu");
+
+const startButton =
+document.getElementById("start");
+
+const tvButton =
+document.getElementById("tv");
+
+const status =
+document.getElementById("status");
 
 
 let scene;
 let camera;
 let renderer;
+
 let cars = [];
 
-const menu =
-document.getElementById("menu");
-
-const start =
-document.getElementById("start");
-
-const status =
-document.getElementById("status");
-
-const fallback =
-document.getElementById("fallback");
+let raceTrack;
 
 
-/* --------------------------------------------------
+/* =====================================================
    THREE.JS
--------------------------------------------------- */
+===================================================== */
 
 scene = new THREE.Scene();
 
@@ -138,14 +156,9 @@ new THREE.PerspectiveCamera(
 );
 
 
-/*
-   Alpha is important:
-   the real world can appear
-   behind the virtual scene.
-*/
-
 renderer =
 new THREE.WebGLRenderer({
+    canvas:canvas,
     antialias:true,
     alpha:true
 });
@@ -161,14 +174,10 @@ renderer.setSize(
 
 renderer.xr.enabled = true;
 
-document.body.appendChild(
-    renderer.domElement
-);
 
-
-/* --------------------------------------------------
-   LIGHT
--------------------------------------------------- */
+/* =====================================================
+   LIGHTING
+===================================================== */
 
 scene.add(
     new THREE.HemisphereLight(
@@ -178,121 +187,157 @@ scene.add(
     )
 );
 
-const light =
+const sun =
 new THREE.DirectionalLight(
     0xffffff,
-    3
+    4
 );
 
-light.position.set(
+sun.position.set(
     5,
-    10,
+    8,
     5
 );
 
-scene.add(light);
+scene.add(sun);
 
 
-/* --------------------------------------------------
-   TRACK
--------------------------------------------------- */
+/* =====================================================
+   MAIN F1 DISPLAY
+===================================================== */
 
-const track =
+const world =
 new THREE.Group();
 
-track.position.set(
-    0,
-    -1.1,
-    -2.5
-);
-
-track.rotation.x =
--0.02;
-
-track.scale.set(
-    1.2,
-    1.2,
-    1.2
-);
-
-scene.add(track);
+scene.add(world);
 
 
 /*
-   Grass/base
+   Positie van de hele F1 tafel.
+
+   X = links/rechts
+   Y = hoogte
+   Z = afstand
+
+   Negatieve Z = vóór de gebruiker
 */
 
-const base =
+world.position.set(
+    0,
+    -0.85,
+    -2.8
+);
+
+
+/* =====================================================
+   TABLE / BASE
+===================================================== */
+
+const table =
 new THREE.Mesh(
-    new THREE.CylinderGeometry(
-        2.7,
-        2.7,
-        .08,
-        64
+    new THREE.BoxGeometry(
+        4.8,
+        .15,
+        2.8
     ),
     new THREE.MeshStandardMaterial({
-        color:0x173c1b
+        color:0x151515,
+        roughness:.7
     })
 );
 
-base.position.y =
--0.08;
+table.position.y =
+-0.18;
 
-track.add(base);
+world.add(table);
+
+
+/* =====================================================
+   GRASS PLATFORM
+===================================================== */
+
+const grass =
+new THREE.Mesh(
+    new THREE.BoxGeometry(
+        4.4,
+        .12,
+        2.4
+    ),
+    new THREE.MeshStandardMaterial({
+        color:0x173d1c
+    })
+);
+
+grass.position.y =
+-0.04;
+
+world.add(grass);
+
+
+/* =====================================================
+   TRACK
+===================================================== */
+
+const points = [
+
+    new THREE.Vector3(-1.75,0,-0.55),
+    new THREE.Vector3(-1.45,0,-0.95),
+    new THREE.Vector3(-0.55,0,-1.05),
+    new THREE.Vector3(0.55,0,-0.95),
+    new THREE.Vector3(1.55,0,-0.55),
+    new THREE.Vector3(1.75,0,0.15),
+    new THREE.Vector3(1.35,0,0.75),
+    new THREE.Vector3(0.45,0,0.9),
+    new THREE.Vector3(-0.55,0,0.85),
+    new THREE.Vector3(-1.65,0,0.65),
+    new THREE.Vector3(-1.9,0,0.05),
+    new THREE.Vector3(-1.75,0,-0.55)
+
+];
+
+
+raceTrack =
+new THREE.CatmullRomCurve3(
+    points,
+    true
+);
 
 
 /*
-   Track
-*/
-
-const trackCurve =
-new THREE.CatmullRomCurve3([
-
-    new THREE.Vector3(-2.0,0,-0.8),
-    new THREE.Vector3(-1.5,0,-1.8),
-    new THREE.Vector3(0.0,0,-2.1),
-    new THREE.Vector3(1.7,0,-1.5),
-    new THREE.Vector3(2.0,0,0.0),
-    new THREE.Vector3(1.4,0,1.4),
-    new THREE.Vector3(0.0,0,1.8),
-    new THREE.Vector3(-1.8,0,1.2),
-    new THREE.Vector3(-2.1,0,0.0),
-    new THREE.Vector3(-1.2,0,-0.5)
-
-],true);
-
-
-/*
-   Road tube
+   Road
 */
 
 const road =
 new THREE.Mesh(
     new THREE.TubeGeometry(
-        trackCurve,
-        160,
-        0.22,
-        12,
+        raceTrack,
+        220,
+        .22,
+        16,
         true
     ),
     new THREE.MeshStandardMaterial({
-        color:0x202020
+        color:0x202020,
+        roughness:.8
     })
 );
 
-track.add(road);
+road.position.y =
+0.08;
+
+world.add(road);
 
 
 /*
    White racing line
 */
 
-const racingLine =
+const line =
 new THREE.Mesh(
     new THREE.TubeGeometry(
-        trackCurve,
-        160,
-        0.012,
+        raceTrack,
+        220,
+        .012,
         6,
         true
     ),
@@ -301,81 +346,360 @@ new THREE.Mesh(
     })
 );
 
-racingLine.position.y =
-0.23;
+line.position.y =
+0.31;
 
-track.add(racingLine);
+world.add(line);
 
 
-/* --------------------------------------------------
+/* =====================================================
+   KERBS
+===================================================== */
+
+const kerbPoints =
+raceTrack.getPoints(220);
+
+const kerbGeometry =
+new THREE.BufferGeometry().setFromPoints(
+    kerbPoints
+);
+
+const kerb =
+new THREE.LineLoop(
+    kerbGeometry,
+    new THREE.LineBasicMaterial({
+        color:0xff2222
+    })
+);
+
+kerb.position.y =
+0.32;
+
+world.add(kerb);
+
+
+/* =====================================================
+   START FINISH
+===================================================== */
+
+const finish =
+new THREE.Mesh(
+    new THREE.BoxGeometry(
+        .08,
+        .025,
+        .55
+    ),
+    new THREE.MeshBasicMaterial({
+        color:0xffffff
+    })
+);
+
+finish.position.set(
+    -1.72,
+    .33,
+    -.55
+);
+
+world.add(finish);
+
+
+/* =====================================================
    CARS
--------------------------------------------------- */
+===================================================== */
 
-const carColors = [
+const colors = [
     0xe10600,
     0x008cff,
     0xffff00,
     0x00ff66,
     0xffffff,
-    0xff8800
+    0xff8800,
+    0xff00aa,
+    0x8888ff
 ];
 
 
-for(let i=0;i<6;i++){
+function createCar(color){
 
     const car =
     new THREE.Group();
+
+
+    /*
+       Main body
+    */
 
     const body =
     new THREE.Mesh(
         new THREE.BoxGeometry(
             .16,
-            .07,
+            .055,
             .38
         ),
         new THREE.MeshStandardMaterial({
-            color:carColors[i]
+            color:color,
+            roughness:.4
         })
     );
 
     car.add(body);
 
 
+    /*
+       Nose
+    */
+
     const nose =
     new THREE.Mesh(
         new THREE.BoxGeometry(
-            .06,
+            .055,
             .035,
-            .18
+            .20
         ),
         new THREE.MeshStandardMaterial({
-            color:carColors[i]
+            color:color
         })
     );
 
     nose.position.z =
-    -0.25;
+    -.27;
 
     car.add(nose);
 
 
-    car.position.y =
-    0.25;
+    /*
+       Front wing
+    */
 
-    track.add(car);
+    const wing =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            .25,
+            .018,
+            .05
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x111111
+        })
+    );
+
+    wing.position.z =
+    -.36;
+
+    car.add(wing);
 
 
-    cars.push({
-        mesh:car,
-        progress:i/6,
-        speed:.0008 - i*.00004
+    /*
+       Rear wing
+    */
+
+    const rear =
+    new THREE.Mesh(
+        new THREE.BoxGeometry(
+            .23,
+            .035,
+            .045
+        ),
+        new THREE.MeshStandardMaterial({
+            color:0x111111
+        })
+    );
+
+    rear.position.z =
+    .20;
+
+    car.add(rear);
+
+
+    /*
+       Wheels
+    */
+
+    const wheelMaterial =
+    new THREE.MeshStandardMaterial({
+        color:0x050505
     });
+
+
+    const wheelGeometry =
+    new THREE.CylinderGeometry(
+        .035,
+        .035,
+        .025,
+        12
+    );
+
+
+    const wheelPositions = [
+        [-.09,-.025,-.15],
+        [.09,-.025,-.15],
+        [-.09,-.025,.15],
+        [.09,-.025,.15]
+    ];
+
+
+    wheelPositions.forEach(p => {
+
+        const wheel =
+        new THREE.Mesh(
+            wheelGeometry,
+            wheelMaterial
+        );
+
+        wheel.rotation.z =
+        Math.PI/2;
+
+        wheel.position.set(
+            p[0],
+            p[1],
+            p[2]
+        );
+
+        car.add(wheel);
+
+    });
+
+
+    return car;
 }
 
 
-/* --------------------------------------------------
+/*
+   Create cars
+*/
+
+for(let i=0;i<8;i++){
+
+    const car =
+    createCar(colors[i]);
+
+    world.add(car);
+
+    cars.push({
+        mesh:car,
+        progress:i/8,
+        speed:.0007 - i*.000025
+    });
+
+}
+
+
+/* =====================================================
+   TV SCREEN
+===================================================== */
+
+const tvGroup =
+new THREE.Group();
+
+
+/*
+   Screen position:
+   behind the circuit and higher.
+*/
+
+tvGroup.position.set(
+    0,
+    1.45,
+    -0.55
+);
+
+world.add(tvGroup);
+
+
+/*
+   Screen frame
+*/
+
+const frame =
+new THREE.Mesh(
+    new THREE.BoxGeometry(
+        3.9,
+        2.15,
+        .08
+    ),
+    new THREE.MeshStandardMaterial({
+        color:0x090909,
+        roughness:.3
+    })
+);
+
+tvGroup.add(frame);
+
+
+/*
+   Actual screen
+*/
+
+const screen =
+new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        3.65,
+        1.9
+    ),
+    new THREE.MeshBasicMaterial({
+        color:0x111111
+    })
+);
+
+screen.position.z =
+-.055;
+
+tvGroup.add(screen);
+
+
+/*
+   F1 TV placeholder graphics
+*/
+
+const screenText =
+new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        3.2,
+        1.5
+    ),
+    new THREE.MeshBasicMaterial({
+        color:0x1a1a1a
+    })
+);
+
+screenText.position.z =
+-.065;
+
+tvGroup.add(screenText);
+
+
+/* =====================================================
+   TIMING SCREEN
+===================================================== */
+
+const timing =
+new THREE.Mesh(
+    new THREE.PlaneGeometry(
+        1.15,
+        .72
+    ),
+    new THREE.MeshBasicMaterial({
+        color:0x222222,
+        transparent:true,
+        opacity:.92
+    })
+);
+
+timing.position.set(
+    1.9,
+    .65,
+    -.15
+);
+
+timing.rotation.y =
+-0.25;
+
+world.add(timing);
+
+
+/* =====================================================
    CAR ANIMATION
--------------------------------------------------- */
+===================================================== */
 
 function updateCars(){
 
@@ -384,57 +708,52 @@ function updateCars(){
         car.progress +=
         car.speed;
 
-        if(car.progress >= 1)
+
+        if(car.progress >= 1){
             car.progress -= 1;
+        }
 
 
-        const position =
-        trackCurve.getPointAt(
+        const pos =
+        raceTrack.getPointAt(
             car.progress
         );
+
 
         const tangent =
-        trackCurve.getTangentAt(
+        raceTrack.getTangentAt(
             car.progress
         );
 
-        car.mesh.position.x =
-        position.x;
 
-        car.mesh.position.y =
-        position.y + .25;
-
-        car.mesh.position.z =
-        position.z;
+        car.mesh.position.set(
+            pos.x,
+            pos.y + .38,
+            pos.z
+        );
 
 
-        const angle =
+        car.mesh.rotation.y =
         Math.atan2(
             tangent.x,
             tangent.z
         );
-
-        car.mesh.rotation.y =
-        angle;
 
     });
 
 }
 
 
-/* --------------------------------------------------
-   WEBXR SUPPORT TEST
--------------------------------------------------- */
+/* =====================================================
+   WEBXR
+===================================================== */
 
-async function checkWebXR(){
+async function checkXR(){
 
     if(!navigator.xr){
 
         status.textContent =
         "WebXR niet beschikbaar.";
-
-        fallback.style.display =
-        "block";
 
         return false;
     }
@@ -451,51 +770,47 @@ async function checkWebXR(){
         if(supported){
 
             status.textContent =
-            "✓ Immersive AR beschikbaar";
+            "✓ Quest 3 immersive AR beschikbaar";
 
             return true;
 
-        }else{
-
-            status.textContent =
-            "Immersive AR niet beschikbaar.";
-
-            fallback.style.display =
-            "block";
-
-            return false;
         }
 
+
+        status.textContent =
+        "Immersive AR niet beschikbaar.";
+
+        return false;
+
     }catch(error){
+
+        console.error(error);
 
         status.textContent =
         "WebXR controle mislukt.";
 
-        console.error(error);
-
         return false;
+
     }
+
 }
 
 
-/* --------------------------------------------------
-   START IMMERSIVE
--------------------------------------------------- */
+/* =====================================================
+   START
+===================================================== */
 
-start.addEventListener(
+startButton.addEventListener(
 "click",
 async function(){
 
-    status.textContent =
-    "Starting WebXR...";
-
-
     const supported =
-    await checkWebXR();
+    await checkXR();
 
 
-    if(!supported)
+    if(!supported){
         return;
+    }
 
 
     try{
@@ -537,22 +852,31 @@ async function(){
 
         console.error(error);
 
-        menu.style.display =
-        "flex";
-
         status.textContent =
-        "WebXR kon niet worden gestart.";
+        "Immersive starten mislukt.";
 
-        fallback.style.display =
-        "block";
     }
 
 });
 
 
-/* --------------------------------------------------
+/* =====================================================
+   F1 TV
+===================================================== */
+
+tvButton.addEventListener(
+"click",
+function(){
+
+    window.location.href =
+    "https://f1tv.formula1.com/";
+
+});
+
+
+/* =====================================================
    RESIZE
--------------------------------------------------- */
+===================================================== */
 
 window.addEventListener(
 "resize",
@@ -572,7 +896,7 @@ function(){
 });
 
 
-checkWebXR();
+checkXR();
 
 </script>
 
