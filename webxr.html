@@ -213,7 +213,6 @@ world.scale.setScalar(.55);
 
 scene.add(world);
 
-
 /* =====================================================
    BAAN
 ===================================================== */
@@ -679,225 +678,6 @@ function vrButton(
   );
 
 
-  /* achtergrond */
-
-  const background =
-  new THREE.Mesh(
-
-    new THREE.CircleGeometry(
-      .115,
-      32
-    ),
-
-    new THREE.MeshBasicMaterial({
-      color:0x17191b,
-      transparent:true,
-      opacity:.95
-    })
-
-  );
-
-  group.add(background);
-
-
-  /* rode ring */
-
-  const ring =
-  new THREE.Mesh(
-
-    new THREE.RingGeometry(
-      .115,
-      .127,
-      32
-    ),
-
-    new THREE.MeshBasicMaterial({
-      color:0x55585c
-    })
-
-  );
-
-  group.add(ring);
-
-
-  /*
-     Icon als klein canvas-sprite.
-  */
-
-  const c =
-  document.createElement("canvas");
-
-  c.width=256;
-  c.height=256;
-
-  const ctx=c.getContext("2d");
-
-  ctx.clearRect(0,0,256,256);
-
-  ctx.fillStyle="#ffffff";
-
-  ctx.font=
-  "bold 82px Arial";
-
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
-
-  ctx.fillText(
-    icon,
-    128,
-    128
-  );
-
-
-  const tex =
-  new THREE.CanvasTexture(c);
-
-  const sprite =
-  new THREE.Sprite(
-    new THREE.SpriteMaterial({
-      map:tex,
-      transparent:true
-    })
-  );
-
-  sprite.scale.set(
-    .13,.13,.13
-  );
-
-  sprite.position.z=-.02;
-
-  group.add(sprite);
-
-
-  /*
-     Onzichtbare klikzone.
-  */
-
-  const hit =
-  new THREE.Mesh(
-
-    new THREE.CircleGeometry(
-      .16,
-      32
-    ),
-
-    new THREE.MeshBasicMaterial({
-      transparent:true,
-      opacity:0
-    })
-
-  );
-
-  hit.userData.action =
-  action;
-
-  hit.userData.label =
-  label;
-
-  hit.userData.group =
-  group;
-
-  group.add(hit);
-
-  interactiveObjects.push(hit);
-
-  world.add(group);
-
-  return group;
-}
-
-
-/* =====================================================
-   PANELEN
-===================================================== */
-
-const mainPanel =
-panel(
-
-  "F1 TV",
-
-  [
-    "LIVE RACE",
-    "MAIN BROADCAST",
-    "F1 TV ACCOUNT",
-    "",
-    "SELECT F1 TV"
-  ],
-
-  4.10,
-  2.15,
-
-  [0,1.48,-.70]
-
-);
-
-
-const timingPanel =
-panel(
-
-  "LIVE TIMING",
-
-  [
-    "P1  VER   +0.000",
-    "P2  LEC   +2.735",
-    "P3  NOR   +3.219",
-    "P4  PIA   +4.669",
-    "P5  HAM   +5.601",
-    "",
-    "LAP 18 / 72"
-  ],
-
-  1.35,
-  1.35,
-
-  [2.05,.82,-.48],
-
-  -.10
-
-);
-
-const multiPanel =
-panel(
-
-  "MULTIVIEW",
-
-  [
-    "MAIN FEED",
-    "ONBOARD",
-    "TRACK CAMERA",
-    "DRIVER CAMERA",
-    "",
-    "SELECT MULTIVIEW"
-  ],
-
-  1.35,
-  1.15,
-
-  [2.05,-.60,-.48],
-
-  -.08
-
-);
-
-/* =====================================================
-   VR BEDIENING
-===================================================== */
-
-function vrButton(
-  icon,
-  label,
-  position,
-  action
-){
-
-  const group =
-  new THREE.Group();
-
-  group.position.set(
-    ...position
-  );
-
-
   /* =========================================
      RONDE KNOP
   ========================================= */
@@ -1088,6 +868,118 @@ function vrButton(
 
   return group;
 }
+
+/* =====================================================
+   PANELEN
+===================================================== */
+
+const mainPanel =
+panel(
+
+  "F1 TV",
+
+  [
+    "LIVE RACE",
+    "MAIN BROADCAST",
+    "F1 TV ACCOUNT",
+    "",
+    "SELECT F1 TV"
+  ],
+
+  4.10,
+  2.15,
+
+  [0,1.48,-.70]
+
+);
+
+
+const timingPanel =
+panel(
+
+  "LIVE TIMING",
+
+  [
+    "P1  VER   +0.000",
+    "P2  LEC   +2.735",
+    "P3  NOR   +3.219",
+    "P4  PIA   +4.669",
+    "P5  HAM   +5.601",
+    "",
+    "LAP 18 / 72"
+  ],
+
+  1.35,
+  1.35,
+
+  [2.05,.82,-.48],
+
+  -.10
+
+);
+
+const multiPanel =
+panel(
+
+  "MULTIVIEW",
+
+  [
+    "MAIN FEED",
+    "ONBOARD",
+    "TRACK CAMERA",
+    "DRIVER CAMERA",
+    "",
+    "SELECT MULTIVIEW"
+  ],
+
+  1.35,
+  1.15,
+
+  [2.05,-.60,-.48],
+
+  -.08
+
+);
+
+
+/* =====================================================
+   VR BEDIENING
+===================================================== */
+
+const btnTV =
+vrButton(
+  "▶",
+  "F1 TV",
+  [-2.05,1.05,-.55],
+  "tv"
+);
+
+
+const btnMulti =
+vrButton(
+  "▦",
+  "MULTIVIEW",
+  [-2.05,.70,-.55],
+  "multi"
+);
+
+
+const btnTiming =
+vrButton(
+  "◉",
+  "TIMING",
+  [-2.05,.35,-.55],
+  "timing"
+);
+
+
+const btnSettings =
+vrButton(
+  "⚙",
+  "SETTINGS",
+  [-2.05,0,-.55],
+  "settings"
+);
 
 /* =====================================================
    RAYCASTER
@@ -1338,11 +1230,35 @@ function highlightController(
    FUNCTIES
 ===================================================== */
 
+/* =========================================
+   F1 TV VENSTERS
+   Eén herbruikbare pagina per functie
+========================================= */
+
+let f1TVWindow = null;
+let multiViewWindow = null;
+
+
 function openF1TV(){
 
+  if(
+    f1TVWindow &&
+    !f1TVWindow.closed
+  ){
+
+    f1TVWindow.focus();
+
+    return;
+  }
+
+
+  f1TVWindow =
   window.open(
+
     "https://f1tv.formula1.com/",
-    "_blank"
+
+    "F1TV_Main"
+
   );
 
 }
@@ -1350,13 +1266,59 @@ function openF1TV(){
 
 function openMultiView(){
 
+  if(
+    multiViewWindow &&
+    !multiViewWindow.closed
+  ){
+
+    multiViewWindow.focus();
+
+    return;
+  }
+
+
+  multiViewWindow =
   window.open(
+
     "https://f1tv.formula1.com/",
-    "_blank"
+
+    "F1TV_Multiview"
+
   );
 
 }
 
+
+/* =========================================
+   ALLES SLUITEN
+========================================= */
+
+function closeF1Windows(){
+
+  if(
+    f1TVWindow &&
+    !f1TVWindow.closed
+  ){
+
+    f1TVWindow.close();
+
+  }
+
+
+  if(
+    multiViewWindow &&
+    !multiViewWindow.closed
+  ){
+
+    multiViewWindow.close();
+
+  }
+
+
+  f1TVWindow=null;
+  multiViewWindow=null;
+
+}
 
 let timingVisible=true;
 
