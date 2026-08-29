@@ -194,13 +194,22 @@ scene.add(light);
 const world =
 new THREE.Group();
 
+/*
+   Ruimtelijke F1-opstelling
+   Y = hoogte boven de vloer
+*/
+
 world.position.set(
   0,
-  -0.92,
+  0.82,
   -3.25
 );
 
-world.scale.setScalar(.72);
+/*
+   Kleinere baan, meer zoals Lapz
+*/
+
+world.scale.setScalar(.55);
 
 scene.add(world);
 
@@ -213,10 +222,10 @@ const base =
 new THREE.Mesh(
 
   new THREE.BoxGeometry(
-    4.8,
-    .15,
-    2.65
-  ),
+  4.25,
+  .15,
+  2.35
+)
 
   new THREE.MeshStandardMaterial({
     color:0x111315,
@@ -234,10 +243,10 @@ const grass =
 new THREE.Mesh(
 
   new THREE.BoxGeometry(
-    4.55,
-    .10,
-    2.42
-  ),
+  4.02,
+  .10,
+  2.12
+)
 
   new THREE.MeshStandardMaterial({
     color:0x203a25,
@@ -815,10 +824,10 @@ panel(
     "SELECT F1 TV"
   ],
 
-  3.25,
-  1.82,
+  4.10,
+  2.15,
 
-  [0,1.55,-.35]
+  [0,1.48,-.70]
 
 );
 
@@ -838,15 +847,14 @@ panel(
     "LAP 18 / 72"
   ],
 
-  1.18,
+  1.35,
   1.35,
 
-  [2.08,1.02,-.30],
+  [2.05,.82,-.48],
 
   -.10
 
 );
-
 
 const multiPanel =
 panel(
@@ -862,55 +870,224 @@ panel(
     "SELECT MULTIVIEW"
   ],
 
-  1.18,
-  1.18,
+  1.35,
+  1.15,
 
-  [2.05,-.08,-.25],
+  [2.05,-.60,-.48],
 
   -.08
 
 );
 
-
 /* =====================================================
    VR BEDIENING
 ===================================================== */
 
-const btnTV =
-vrButton(
-  "▶",
-  "F1 TV",
-  [-2.00,1.25,-.20],
-  "tv"
-);
+function vrButton(
+  icon,
+  label,
+  position,
+  action
+){
+
+  const group =
+  new THREE.Group();
+
+  group.position.set(
+    ...position
+  );
 
 
-const btnMulti =
-vrButton(
-  "▦",
-  "MULTIVIEW",
-  [-2.00,.92,-.20],
-  "multi"
-);
+  /* =========================================
+     RONDE KNOP
+  ========================================= */
+
+  const background =
+  new THREE.Mesh(
+
+    new THREE.CircleGeometry(
+      .115,
+      32
+    ),
+
+    new THREE.MeshBasicMaterial({
+      color:0x101214,
+      transparent:true,
+      opacity:.96
+    })
+
+  );
+
+  group.add(background);
 
 
-const btnTiming =
-vrButton(
-  "◉",
-  "TIMING",
-  [-2.00,.59,-.20],
-  "timing"
-);
+  /* rode interactiering */
+
+  const ring =
+  new THREE.Mesh(
+
+    new THREE.RingGeometry(
+      .115,
+      .127,
+      32
+    ),
+
+    new THREE.MeshBasicMaterial({
+      color:0x55585c
+    })
+
+  );
+
+  group.add(ring);
 
 
-const btnSettings =
-vrButton(
-  "⚙",
-  "SETTINGS",
-  [-2.00,.26,-.20],
-  "settings"
-);
+  /* =========================================
+     ICOON
+  ========================================= */
 
+  const c =
+  document.createElement("canvas");
+
+  c.width=256;
+  c.height=256;
+
+  const ctx =
+  c.getContext("2d");
+
+  ctx.clearRect(
+    0,0,256,256
+  );
+
+  ctx.fillStyle="#ffffff";
+
+  ctx.font=
+  "bold 82px Arial";
+
+  ctx.textAlign="center";
+  ctx.textBaseline="middle";
+
+  ctx.fillText(
+    icon,
+    128,
+    128
+  );
+
+
+  const tex =
+  new THREE.CanvasTexture(c);
+
+  const sprite =
+  new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map:tex,
+      transparent:true
+    })
+  );
+
+  sprite.scale.set(
+    .13,.13,.13
+  );
+
+  sprite.position.z=-.02;
+
+  group.add(sprite);
+
+
+  /* =========================================
+     TEKST LABEL
+  ========================================= */
+
+  const labelCanvas =
+  document.createElement("canvas");
+
+  labelCanvas.width=500;
+  labelCanvas.height=120;
+
+  const labelCtx =
+  labelCanvas.getContext("2d");
+
+  labelCtx.fillStyle="#ffffff";
+
+  labelCtx.font=
+  "bold 48px Arial";
+
+  labelCtx.textAlign="left";
+
+  labelCtx.textBaseline="middle";
+
+  labelCtx.fillText(
+    label,
+    15,
+    60
+  );
+
+
+  const labelTexture =
+  new THREE.CanvasTexture(
+    labelCanvas
+  );
+
+
+  const labelSprite =
+  new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map:labelTexture,
+      transparent:true
+    })
+  );
+
+
+  labelSprite.scale.set(
+    .52,
+    .125,
+    .125
+  );
+
+  labelSprite.position.set(
+    .34,
+    0,
+    0
+  );
+
+  group.add(labelSprite);
+
+
+  /* =========================================
+     KLIKZONE
+  ========================================= */
+
+  const hit =
+  new THREE.Mesh(
+
+    new THREE.CircleGeometry(
+      .17,
+      32
+    ),
+
+    new THREE.MeshBasicMaterial({
+      transparent:true,
+      opacity:0
+    })
+
+  );
+
+  hit.userData.action =
+  action;
+
+  hit.userData.label =
+  label;
+
+  hit.userData.group =
+  group;
+
+  group.add(hit);
+
+  interactiveObjects.push(hit);
+
+  world.add(group);
+
+  return group;
+}
 
 /* =====================================================
    RAYCASTER
