@@ -1443,28 +1443,47 @@ function updateCars(){
 
 async function checkXR(){
 
+  status.textContent =
+    "WebXR controleren...";
+
+
   if(!navigator.xr){
 
-    status.textContent=
-    "WebXR niet beschikbaar.";
+    status.textContent =
+      "WebXR niet beschikbaar.";
 
     return false;
-
   }
 
 
   try{
 
-    const supported=
-    await navigator.xr.isSessionSupported(
-      "immersive-ar"
-    );
+    const supported =
+      await Promise.race([
+
+        navigator.xr.isSessionSupported(
+          "immersive-ar"
+        ),
+
+        new Promise(
+          (_, reject) =>
+            setTimeout(
+              () => reject(
+                new Error(
+                  "WebXR timeout"
+                )
+              ),
+              5000
+            )
+        )
+
+      ]);
 
 
-    status.textContent=
-    supported
-    ? "✓ Quest 3 immersive AR beschikbaar"
-    : "Immersive AR niet beschikbaar.";
+    status.textContent =
+      supported
+      ? "✓ Quest 3 immersive AR beschikbaar"
+      : "Immersive AR niet beschikbaar.";
 
 
     return supported;
@@ -1472,16 +1491,21 @@ async function checkXR(){
   }
   catch(error){
 
-    status.textContent=
-    "WebXR controle mislukt.";
+    console.error(
+      "WebXR controle:",
+      error
+    );
 
-    return false;
+
+    status.textContent =
+      "WebXR klaar — probeer Immersive";
+
+
+    return true;
 
   }
 
 }
-
-
 /* =====================================================
    START
 ===================================================== */
