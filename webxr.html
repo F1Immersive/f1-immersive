@@ -2,61 +2,127 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
+
 <title>F1 Immersive</title>
 
 <style>
-html,body{
+
+html,
+body{
   margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
+
   background:#000;
   color:#fff;
-  font-family:Arial,Helvetica,sans-serif;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+body{
+  touch-action:none;
 }
 
 #menu{
   position:fixed;
   inset:0;
   z-index:20;
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   background:
-    radial-gradient(circle at 50% 35%,#25282c,#08090a 65%,#000);
+    radial-gradient(
+      circle at 50% 35%,
+      #25282c 0%,
+      #0b0c0e 58%,
+      #000 100%
+    );
 }
 
 .card{
-  width:min(88vw,460px);
+  width:min(86vw,440px);
+
   padding:34px;
+
   text-align:center;
-  background:rgba(12,14,16,.92);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:24px;
-  box-shadow:0 25px 90px rgba(0,0,0,.8);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(25,27,30,.96),
+      rgba(8,9,10,.96)
+    );
+
+  border:1px solid rgba(255,255,255,.12);
+
+  border-radius:26px;
+
+  box-shadow:
+    0 25px 90px rgba(0,0,0,.85),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.logoLine{
+  width:52px;
+  height:4px;
+
+  margin:0 auto 18px;
+
+  background:#e10600;
+
+  border-radius:5px;
+
+  box-shadow:
+    0 0 18px rgba(225,6,0,.45);
 }
 
 .card h1{
   margin:0 0 8px;
-  font-size:38px;
-  letter-spacing:3px;
+
+  font-size:36px;
+  font-weight:800;
+
+  letter-spacing:4px;
 }
 
 .card p{
-  color:#aeb2b6;
-  margin-bottom:25px;
+  margin:0 0 26px;
+
+  color:#9da2a7;
+
+  font-size:14px;
+  line-height:1.6;
 }
 
 button{
-  border:1px solid rgba(255,255,255,.18);
-  border-radius:12px;
+  border:1px solid rgba(255,255,255,.14);
+
+  border-radius:13px;
+
   padding:14px 22px;
+
   margin:5px;
+
   background:#e10600;
+
   color:#fff;
-  font-size:15px;
-  font-weight:bold;
+
+  font-size:14px;
+
+  font-weight:700;
+
+  letter-spacing:.5px;
+
+  cursor:pointer;
 }
 
 button.secondary{
@@ -65,30 +131,44 @@ button.secondary{
 
 #status{
   margin-top:15px;
-  color:#aaa;
-  font-size:13px;
+
+  color:#92979c;
+
+  font-size:12px;
 }
 
 canvas{
   position:fixed;
   inset:0;
+
   width:100%;
   height:100%;
+
+  display:block;
 }
+
 </style>
 </head>
 
+
 <body>
+
+
+<!-- =====================================================
+     START MENU
+===================================================== -->
 
 <div id="menu">
 
   <div class="card">
 
+    <div class="logoLine"></div>
+
     <h1>F1 IMMERSIVE</h1>
 
     <p>
       Spatial Formula 1<br>
-      Meta Quest 3
+      Designed for Meta Quest 3
     </p>
 
     <button id="start">
@@ -111,7 +191,9 @@ canvas{
 
 </div>
 
+
 <canvas id="c"></canvas>
+
 
 <script type="module">
 
@@ -129,8 +211,10 @@ document.getElementById("menu");
 const status =
 document.getElementById("status");
 
+
 const scene =
 new THREE.Scene();
+
 
 const camera =
 new THREE.PerspectiveCamera(
@@ -139,6 +223,7 @@ new THREE.PerspectiveCamera(
   .01,
   100
 );
+
 
 const renderer =
 new THREE.WebGLRenderer({
@@ -152,16 +237,23 @@ new THREE.WebGLRenderer({
 
 });
 
+
 renderer.setPixelRatio(
   Math.min(devicePixelRatio,2)
 );
+
 
 renderer.setSize(
   innerWidth,
   innerHeight
 );
 
-renderer.xr.enabled = true;
+
+renderer.xr.enabled=true;
+
+
+renderer.outputColorSpace =
+THREE.SRGBColorSpace;
 
 
 /* =====================================================
@@ -169,12 +261,15 @@ renderer.xr.enabled = true;
 ===================================================== */
 
 scene.add(
+
   new THREE.HemisphereLight(
     0xffffff,
-    0x303030,
+    0x202020,
     3
   )
+
 );
+
 
 const light =
 new THREE.DirectionalLight(
@@ -182,7 +277,13 @@ new THREE.DirectionalLight(
   3
 );
 
-light.position.set(4,8,5);
+
+light.position.set(
+  4,
+  8,
+  5
+);
+
 
 scene.add(light);
 
@@ -194,28 +295,59 @@ scene.add(light);
 const world =
 new THREE.Group();
 
+
 /*
-   Ruimtelijke F1-opstelling
-   Y = hoogte boven de vloer
+   DE HELE OPSTELLING STAAT NU LAGER.
+
+   Deze waarde kunnen we later
+   vanuit SETTINGS aanpassen.
 */
+
+let worldHeight = 0.78;
+
 
 world.position.set(
   0,
-  1.05,
+  worldHeight,
   -3.25
 );
 
+
 /*
-   Compacte baan
+   Algemene schaal van de interface.
 */
 
 world.scale.setScalar(.48);
+
 
 scene.add(world);
 
 
 /* =====================================================
-   BAAN
+   TRACK GROUP
+===================================================== */
+
+/*
+   BELANGRIJK:
+
+   De baan heeft nu zijn eigen schaal.
+
+   Hierdoor worden de panelen NIET kleiner
+   wanneer we de baan kleiner maken.
+*/
+
+const trackWorld =
+new THREE.Group();
+
+
+trackWorld.scale.setScalar(.55);
+
+
+world.add(trackWorld);
+
+
+/* =====================================================
+   BAAN BASIS
 ===================================================== */
 
 const base =
@@ -228,16 +360,25 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
+
     color:0x111315,
+
     roughness:.8
+
   })
 
 );
 
+
 base.position.y=-.17;
 
-world.add(base);
 
+trackWorld.add(base);
+
+
+/* =====================================================
+   GROEN PLATFORM
+===================================================== */
 
 const grass =
 new THREE.Mesh(
@@ -249,42 +390,89 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
+
     color:0x203a25,
+
     roughness:.9
+
   })
 
 );
 
+
 grass.position.y=-.08;
 
-world.add(grass);
+
+trackWorld.add(grass);
+
+
+/* =====================================================
+   RODE RAND ONDER PLATFORM
+===================================================== */
+
+const redBase =
+new THREE.Mesh(
+
+  new THREE.BoxGeometry(
+    4.18,
+    .035,
+    2.28
+  ),
+
+  new THREE.MeshBasicMaterial({
+
+    color:0xe10600
+
+  })
+
+);
+
+
+redBase.position.y=-.245;
+
+
+trackWorld.add(redBase);
 
 
 /* =====================================================
    CIRCUIT
 ===================================================== */
 
-const points = [
+const points=[
 
   [-1.65,-.45],
+
   [-1.25,-.88],
+
   [-.35,-.98],
+
   [.65,-.85],
+
   [1.45,-.45],
+
   [1.62,.10],
+
   [1.28,.65],
+
   [.45,.78],
+
   [-.45,.72],
+
   [-1.48,.50],
+
   [-1.72,.02]
 
 ].map(
-  p => new THREE.Vector3(
+
+  p =>
+  new THREE.Vector3(
     p[0],
     0,
     p[1]
   )
+
 );
+
 
 const track =
 new THREE.CatmullRomCurve3(
@@ -309,19 +497,24 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
+
     color:0x25282b,
+
     roughness:.8
+
   })
 
 );
 
+
 road.position.y=.05;
 
-world.add(road);
+
+trackWorld.add(road);
 
 
 /* =====================================================
-   WITTE LIJN
+   WITTE RAND
 ===================================================== */
 
 const line =
@@ -336,24 +529,41 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshBasicMaterial({
+
     color:0xffffff
+
   })
 
 );
 
+
 line.position.y=.275;
 
-world.add(line);
+
+trackWorld.add(line);
 
 
 /* =====================================================
    KERBS
 ===================================================== */
 
-for(let i=0;i<90;i++){
+for(
+  let i=0;
+  i<90;
+  i++
+){
 
   const p =
-  track.getPointAt(i/90);
+  track.getPointAt(
+    i/90
+  );
+
+
+  const tangent =
+  track.getTangentAt(
+    i/90
+  );
+
 
   const kerb =
   new THREE.Mesh(
@@ -375,13 +585,23 @@ for(let i=0;i<90;i++){
 
   );
 
+
   kerb.position.set(
     p.x,
     .29,
     p.z
   );
 
-  world.add(kerb);
+
+  kerb.rotation.y =
+  Math.atan2(
+    tangent.x,
+    tangent.z
+  );
+
+
+  trackWorld.add(kerb);
+
 }
 
 
@@ -389,7 +609,8 @@ for(let i=0;i<90;i++){
    AUTO'S
 ===================================================== */
 
-const carColors = [
+const carColors=[
+
   0xe10600,
   0x1677ff,
   0xffd400,
@@ -398,7 +619,9 @@ const carColors = [
   0xff7a00,
   0xb05cff,
   0x55c7ff
+
 ];
+
 
 const cars=[];
 
@@ -408,84 +631,129 @@ function createCar(color){
   const g =
   new THREE.Group();
 
+
   const material =
   new THREE.MeshStandardMaterial({
-    color,
+
+    color:color,
+
     roughness:.35
+
   });
 
 
+  /* body */
+
   const body =
   new THREE.Mesh(
+
     new THREE.BoxGeometry(
       .13,
       .05,
       .34
     ),
+
     material
+
   );
+
 
   g.add(body);
 
 
+  /* nose */
+
   const nose =
   new THREE.Mesh(
+
     new THREE.BoxGeometry(
       .045,
       .03,
       .18
     ),
+
     material
+
   );
 
+
   nose.position.z=-.23;
+
 
   g.add(nose);
 
 
+  /* front wing */
+
   const frontWing =
   new THREE.Mesh(
+
     new THREE.BoxGeometry(
       .20,
       .015,
       .04
     ),
+
     new THREE.MeshStandardMaterial({
+
       color:0x080808
+
     })
+
   );
 
+
   frontWing.position.z=-.30;
+
 
   g.add(frontWing);
 
 
+  /* rear wing */
+
   const rearWing =
   new THREE.Mesh(
+
     new THREE.BoxGeometry(
       .19,
       .025,
       .04
     ),
+
     new THREE.MeshStandardMaterial({
+
       color:0x080808
+
     })
+
   );
+
 
   rearWing.position.z=.17;
 
+
   g.add(rearWing);
 
+
   return g;
+
 }
 
 
-for(let i=0;i<8;i++){
+for(
+  let i=0;
+  i<8;
+  i++
+){
 
   const car =
-  createCar(carColors[i]);
+  createCar(
+    carColors[i]
+  );
 
-  world.add(car);
+
+  trackWorld.add(car);
+
 
   cars.push({
 
@@ -494,7 +762,8 @@ for(let i=0;i<8;i++){
     t:i/8,
 
     speed:
-    .00072-i*.000014
+    .00072 -
+    i*.000014
 
   });
 
@@ -512,16 +781,23 @@ function texture(
 ){
 
   const canvas =
-  document.createElement("canvas");
+  document.createElement(
+    "canvas"
+  );
+
 
   canvas.width=900;
   canvas.height=520;
+
 
   const ctx =
   canvas.getContext("2d");
 
 
+  /* achtergrond */
+
   ctx.fillStyle="#101214";
+
 
   ctx.fillRect(
     0,
@@ -531,20 +807,41 @@ function texture(
   );
 
 
-  ctx.fillStyle=accent;
+  /* bovenste glans */
+
+  ctx.fillStyle=
+  "rgba(255,255,255,.025)";
+
 
   ctx.fillRect(
     0,
     0,
-    7,
+    900,
+    90
+  );
+
+
+  /* F1 accent */
+
+  ctx.fillStyle=accent;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    8,
     520
   );
 
 
-  ctx.fillStyle="#fff";
+  /* titel */
+
+  ctx.fillStyle="#ffffff";
+
 
   ctx.font=
-  "bold 36px Arial";
+  "bold 34px Arial";
+
 
   ctx.fillText(
     title,
@@ -553,23 +850,34 @@ function texture(
   );
 
 
+  /* horizontale lijn */
+
   ctx.strokeStyle=
-  "rgba(255,255,255,.15)";
+  "rgba(255,255,255,.14)";
+
+
+  ctx.lineWidth=1;
+
 
   ctx.beginPath();
+
 
   ctx.moveTo(
     35,
     78
   );
 
+
   ctx.lineTo(
     865,
     78
   );
 
+
   ctx.stroke();
 
+
+  /* regels */
 
   ctx.font=
   "22px Arial";
@@ -580,8 +888,9 @@ function texture(
 
       ctx.fillStyle =
       i===0
-      ? "#fff"
+      ? "#ffffff"
       : "#b9bec3";
+
 
       ctx.fillText(
         row,
@@ -596,14 +905,15 @@ function texture(
   return new THREE.CanvasTexture(
     canvas
   );
+
 }
 
 
 /* =====================================================
-   INTERACTIEVE PANELEN
+   PANELEN
 ===================================================== */
 
-const interactiveObjects=[];
+const panelObjects=[];
 
 
 function panel(
@@ -619,15 +929,17 @@ function panel(
   const group =
   new THREE.Group();
 
+
   group.position.set(
     ...position
   );
+
 
   group.rotation.y=
   rotation;
 
 
-  /* FRAME */
+  /* frame */
 
   const frame =
   new THREE.Mesh(
@@ -638,17 +950,22 @@ function panel(
     ),
 
     new THREE.MeshBasicMaterial({
-      color:0x3d4145,
+
+      color:0x3b3f43,
+
       transparent:true,
-      opacity:.9
+
+      opacity:.92
+
     })
 
   );
 
+
   group.add(frame);
 
 
-  /* SCHERM */
+  /* scherm */
 
   const screen =
   new THREE.Mesh(
@@ -659,29 +976,224 @@ function panel(
     ),
 
     new THREE.MeshBasicMaterial({
+
       map:
       texture(
         title,
         rows,
         accent
       )
+
     })
 
   );
 
+
   screen.position.z=-.03;
+
 
   group.add(screen);
 
 
   world.add(group);
 
+
+  panelObjects.push(group);
+
+
   return group;
+
 }
 
 
 /* =====================================================
-   INTERACTIEVE KNOP
+   HOOFDSCHERM
+===================================================== */
+
+const mainPanel =
+panel(
+
+  "F1 TV",
+
+  [
+
+    "LIVE RACE",
+    "MAIN BROADCAST",
+    "F1 TV ACCOUNT",
+    "",
+    "SELECT F1 TV"
+
+  ],
+
+  3.65,
+  1.90,
+
+  [0,1.45,-1.05]
+
+);
+
+
+/* =====================================================
+   LIVE TIMING
+===================================================== */
+
+const timingPanel =
+panel(
+
+  "LIVE TIMING",
+
+  [
+
+    "P1  VER   +0.000",
+    "P2  LEC   +2.735",
+    "P3  NOR   +3.219",
+    "P4  PIA   +4.669",
+    "P5  HAM   +5.601",
+    "",
+    "LAP 18 / 72"
+
+  ],
+
+  1.20,
+  1.25,
+
+ [2.60,1.45,-.80],
+
+  -.10
+
+);
+
+
+/* =====================================================
+   MULTIVIEW
+===================================================== */
+
+const multiPanel =
+panel(
+
+  "MULTIVIEW",
+
+  [
+
+    "MAIN FEED",
+    "ONBOARD",
+    "TRACK CAMERA",
+    "DRIVER CAMERA",
+    "",
+    "SELECT MULTIVIEW"
+
+  ],
+
+  1.20,
+  1.08,
+
+ [2.60,.10,-.80],
+
+  -.08
+
+);
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+const settingsPanel =
+panel(
+
+  "SETTINGS",
+
+  [
+
+    "HEIGHT       0.78 m",
+    "SHOW TIMING",
+    "SHOW MULTIVIEW",
+    "HAND TRACKING",
+    "",
+    "SYSTEM READY"
+
+  ],
+
+  1.55,
+  1.30,
+
+  [-.15,.05,-.60],
+
+  0
+
+);
+
+
+settingsPanel.visible=false;
+
+
+/* =====================================================
+   INTERACTIEVE OBJECTEN
+===================================================== */
+
+const interactiveObjects=[];
+
+
+/* =====================================================
+   TEXTURE VOOR KNOP
+===================================================== */
+
+function createTextTexture(
+  text,
+  fontSize=44
+){
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=600;
+  canvas.height=140;
+
+
+  const ctx =
+  canvas.getContext("2d");
+
+
+  ctx.clearRect(
+    0,
+    0,
+    600,
+    140
+  );
+
+
+  ctx.fillStyle="#ffffff";
+
+
+  ctx.font=
+  `bold ${fontSize}px Arial`;
+
+
+  ctx.textAlign="left";
+
+
+  ctx.textBaseline="middle";
+
+
+  ctx.fillText(
+    text,
+    15,
+    70
+  );
+
+
+  return new THREE.CanvasTexture(
+    canvas
+  );
+
+}
+
+
+/* =====================================================
+   VR BUTTON
 ===================================================== */
 
 function vrButton(
@@ -694,315 +1206,258 @@ function vrButton(
   const group =
   new THREE.Group();
 
+
   group.position.set(
     ...position
   );
 
 
-  /* RONDE KNOP */
+  /* achtergrond */
 
   const background =
   new THREE.Mesh(
 
     new THREE.CircleGeometry(
-      .115,
+      .105,
       32
     ),
 
     new THREE.MeshBasicMaterial({
+
       color:0x101214,
+
       transparent:true,
-      opacity:.96
+
+      opacity:.97
+
     })
 
   );
 
+
   group.add(background);
 
 
-  /* INTERACTIERING */
+  /* rode ring */
 
   const ring =
   new THREE.Mesh(
 
     new THREE.RingGeometry(
-      .115,
-      .127,
+      .105,
+      .118,
       32
     ),
 
     new THREE.MeshBasicMaterial({
-      color:0x55585c
+
+      color:0x4d5155
+
     })
 
   );
 
+
   group.add(ring);
 
 
-  /* ICOON */
+  /* icoon */
 
-  const c =
-  document.createElement("canvas");
+  const iconCanvas =
+  document.createElement(
+    "canvas"
+  );
 
-  c.width=256;
-  c.height=256;
 
-  const ctx =
-  c.getContext("2d");
+  iconCanvas.width=256;
+  iconCanvas.height=256;
 
-  ctx.clearRect(
+
+  const iconCtx =
+  iconCanvas.getContext("2d");
+
+
+  iconCtx.clearRect(
     0,
     0,
     256,
     256
   );
 
-  ctx.fillStyle="#ffffff";
 
-  ctx.font=
+  iconCtx.fillStyle="#ffffff";
+
+
+  iconCtx.font=
   "bold 82px Arial";
 
-  ctx.textAlign="center";
-  ctx.textBaseline="middle";
 
-  ctx.fillText(
+  iconCtx.textAlign="center";
+
+
+  iconCtx.textBaseline="middle";
+
+
+  iconCtx.fillText(
     icon,
     128,
     128
   );
 
 
-  const tex =
-  new THREE.CanvasTexture(c);
+  const iconTexture =
+  new THREE.CanvasTexture(
+    iconCanvas
+  );
+
 
   const sprite =
   new THREE.Sprite(
+
     new THREE.SpriteMaterial({
-      map:tex,
+
+      map:iconTexture,
+
       transparent:true
+
     })
+
   );
+
 
   sprite.scale.set(
-    .13,
-    .13,
-    .13
+    .12,
+    .12,
+    .12
   );
 
+
   sprite.position.z=-.02;
+
 
   group.add(sprite);
 
 
-  /* LABEL */
-
-  const labelCanvas =
-  document.createElement("canvas");
-
-  labelCanvas.width=500;
-  labelCanvas.height=120;
-
-  const labelCtx =
-  labelCanvas.getContext("2d");
-
-  labelCtx.fillStyle="#ffffff";
-
-  labelCtx.font=
-  "bold 48px Arial";
-
-  labelCtx.textAlign="left";
-
-  labelCtx.textBaseline="middle";
-
-  labelCtx.fillText(
-    label,
-    15,
-    60
-  );
-
+  /* label */
 
   const labelTexture =
-  new THREE.CanvasTexture(
-    labelCanvas
+  createTextTexture(
+    label,
+    40
   );
 
 
   const labelSprite =
   new THREE.Sprite(
+
     new THREE.SpriteMaterial({
+
       map:labelTexture,
+
       transparent:true
+
     })
+
   );
 
 
   labelSprite.scale.set(
-    .52,
-    .125,
-    .125
+    .45,
+    .105,
+    .105
   );
 
+
   labelSprite.position.set(
-    .34,
+    .29,
     0,
     0
   );
 
+
   group.add(labelSprite);
 
 
-  /* KLIKZONE */
+  /* hit area */
 
   const hit =
   new THREE.Mesh(
 
     new THREE.CircleGeometry(
-      .17,
+      .16,
       32
     ),
 
     new THREE.MeshBasicMaterial({
+
       transparent:true,
+
       opacity:0
+
     })
 
   );
 
-  hit.userData.action =
+
+  hit.userData.action=
   action;
 
-  hit.userData.label =
+
+  hit.userData.label=
   label;
 
-  hit.userData.group =
+
+  hit.userData.group=
   group;
+
 
   group.add(hit);
 
+
   interactiveObjects.push(hit);
+
 
   world.add(group);
 
+
   return group;
+
 }
 
 
 /* =====================================================
-   PANELEN
+   LINKER MENU
 ===================================================== */
 
-const mainPanel =
-panel(
-
-  "F1 TV",
-
-  [
-    "LIVE RACE",
-    "MAIN BROADCAST",
-    "F1 TV ACCOUNT",
-    "",
-    "SELECT F1 TV"
-  ],
-
-  4.10,
-  2.15,
-
-  [0,1.55,-1.05]
-
-);
-
-
-const timingPanel =
-panel(
-
-  "LIVE TIMING",
-
-  [
-    "P1  VER   +0.000",
-    "P2  LEC   +2.735",
-    "P3  NOR   +3.219",
-    "P4  PIA   +4.669",
-    "P5  HAM   +5.601",
-    "",
-    "LAP 18 / 72"
-  ],
-
-  1.35,
-  1.35,
-
-  [2.32,1.45,-0.80],
-
-  -.10
-
-);
-
-
-const multiPanel =
-panel(
-
-  "MULTIVIEW",
-
-  [
-    "MAIN FEED",
-    "ONBOARD",
-    "TRACK CAMERA",
-    "DRIVER CAMERA",
-    "",
-    "SELECT MULTIVIEW"
-  ],
-
-  1.35,
-  1.15,
-
-  [2.32,.10,-0.80],
-
-  -.08
-
-);
-
-
-/* =====================================================
-   VR BEDIENING
-===================================================== */
-
-const btnTV =
 vrButton(
   "▶",
   "F1 TV",
-  [-2.15,1.05,-.55],
+  [-2.15,1.00,-.55],
   "tv"
 );
 
 
-const btnMulti =
 vrButton(
   "▦",
   "MULTIVIEW",
-  [-2.15,.68,-.55],
+  [-2.15,.64,-.55],
   "multi"
 );
 
 
-const btnTiming =
 vrButton(
   "◉",
   "TIMING",
-  [-2.15,.31,-.55],
+  [-2.15,.28,-.55],
   "timing"
 );
 
 
-/*
-   SETTINGS IS BEWUST VERWIJDERD.
-   CLOSE F1 staat nu op de vrijgekomen plek.
-*/
 
-const btnClose =
 vrButton(
   "×",
   "CLOSE F1",
-  [-2.15,.06,-.55],
+  [-2.15,-.08,-.55],
   "close"
 );
 
@@ -1014,27 +1469,29 @@ vrButton(
 const raycaster =
 new THREE.Raycaster();
 
+
 const tempMatrix =
 new THREE.Matrix4();
 
-const controllerStates=[];
-
 
 /* =====================================================
-   CONTROLLER
+   CONTROLLERS
 ===================================================== */
 
-function setupController(index){
+function setupController(
+  index
+){
 
   const controller =
-  renderer.xr.getController(index);
+  renderer.xr.getController(
+    index
+  );
+
 
   scene.add(controller);
 
 
-  /*
-     Rode richtlijn
-  */
+  /* pointer */
 
   const lineGeometry =
   new THREE.BufferGeometry()
@@ -1061,12 +1518,17 @@ function setupController(index){
     lineGeometry,
 
     new THREE.LineBasicMaterial({
+
       color:0xe10600,
+
       transparent:true,
+
       opacity:.85
+
     })
 
   );
+
 
   controller.add(line);
 
@@ -1074,8 +1536,6 @@ function setupController(index){
   controller.addEventListener(
     "selectstart",
     ()=>{
-
-      controllerStates[index]=true;
 
       selectController(
         controller
@@ -1085,36 +1545,32 @@ function setupController(index){
   );
 
 
-  controller.addEventListener(
-    "selectend",
-    ()=>{
-
-      controllerStates[index]=false;
-
-    }
-  );
-
-
   return controller;
+
 }
 
 
 const controllers=[
+
   setupController(0),
+
   setupController(1)
+
 ];
 
 
 /* =====================================================
-   CONTROLLER SELECTIE
+   RAYCAST
 ===================================================== */
 
-function selectController(
+function getControllerHits(
   controller
 ){
 
-  tempMatrix.identity()
-  .extractRotation(
+  tempMatrix.identity();
+
+
+  tempMatrix.extractRotation(
     controller.matrixWorld
   );
 
@@ -1136,10 +1592,25 @@ function selectController(
   );
 
 
-  const hits =
-  raycaster.intersectObjects(
+  return raycaster.intersectObjects(
     interactiveObjects,
     false
+  );
+
+}
+
+
+/* =====================================================
+   SELECT
+===================================================== */
+
+function selectController(
+  controller
+){
+
+  const hits =
+  getControllerHits(
+    controller
   );
 
 
@@ -1147,38 +1618,40 @@ function selectController(
     return;
 
 
-  const object =
-  hits[0].object;
-
-
   const action =
-  object.userData.action;
+  hits[0].object.userData.action;
 
 
-  if(action==="tv"){
+  switch(action){
 
-    openF1TV();
+    case "tv":
 
-  }
+      openF1TV();
 
-
-  if(action==="multi"){
-
-    openMultiView();
-
-  }
+      break;
 
 
-  if(action==="timing"){
+    case "multi":
 
-    toggleTiming();
+      openMultiView();
 
-  }
+      break;
 
 
-  if(action==="close"){
+    case "timing":
 
-    closeF1Windows();
+      toggleTiming();
+
+      break;
+
+
+   
+
+    case "close":
+
+      closeF1Windows();
+
+      break;
 
   }
 
@@ -1193,24 +1666,9 @@ function highlightController(
   controller
 ){
 
-  tempMatrix.identity()
-  .extractRotation(
-    controller.matrixWorld
-  );
-
-  raycaster.ray.origin
-  .setFromMatrixPosition(
-    controller.matrixWorld
-  );
-
-  raycaster.ray.direction
-  .set(
-    0,
-    0,
-    -1
-  )
-  .applyMatrix4(
-    tempMatrix
+  const hits =
+  getControllerHits(
+    controller
   );
 
 
@@ -1220,13 +1678,15 @@ function highlightController(
       const group =
       object.userData.group;
 
+
       const ring =
       group.children[1];
+
 
       if(ring){
 
         ring.material.color.set(
-          0x55585c
+          0x4d5155
         );
 
       }
@@ -1235,20 +1695,15 @@ function highlightController(
   );
 
 
-  const hits =
-  raycaster.intersectObjects(
-    interactiveObjects,
-    false
-  );
-
-
   if(hits.length){
 
     const group =
     hits[0].object.userData.group;
 
+
     const ring =
     group.children[1];
+
 
     if(ring){
 
@@ -1264,11 +1719,12 @@ function highlightController(
 
 
 /* =====================================================
-   F1 TV VENSTERS
+   F1 TV
 ===================================================== */
 
-let f1TVWindow = null;
-let multiViewWindow = null;
+let f1TVWindow=null;
+
+let multiViewWindow=null;
 
 
 function openF1TV(){
@@ -1281,13 +1737,17 @@ function openF1TV(){
     f1TVWindow.focus();
 
     return;
+
   }
 
 
   f1TVWindow =
   window.open(
+
     "https://f1tv.formula1.com/",
+
     "F1TV_Main"
+
   );
 
 
@@ -1302,6 +1762,10 @@ function openF1TV(){
 }
 
 
+/* =====================================================
+   MULTIVIEW
+===================================================== */
+
 function openMultiView(){
 
   if(
@@ -1312,13 +1776,17 @@ function openMultiView(){
     multiViewWindow.focus();
 
     return;
+
   }
 
 
   multiViewWindow =
   window.open(
+
     "https://f1tv.formula1.com/",
+
     "F1TV_Multiview"
+
   );
 
 
@@ -1334,7 +1802,7 @@ function openMultiView(){
 
 
 /* =====================================================
-   F1 VENSTERS SLUITEN
+   CLOSE
 ===================================================== */
 
 function closeF1Windows(){
@@ -1359,8 +1827,9 @@ function closeF1Windows(){
   }
 
 
-  f1TVWindow = null;
-  multiViewWindow = null;
+  f1TVWindow=null;
+
+  multiViewWindow=null;
 
 }
 
@@ -1377,8 +1846,58 @@ function toggleTiming(){
   timingVisible=
   !timingVisible;
 
+
   timingPanel.visible=
   timingVisible;
+
+}
+
+
+/* =====================================================
+   MULTIVIEW
+===================================================== */
+
+let multiVisible=true;
+
+
+function toggleMultiView(){
+
+  multiVisible=
+  !multiVisible;
+
+
+  multiPanel.visible=
+  multiVisible;
+
+}
+
+
+/* =====================================================
+   SETTINGS
+===================================================== */
+
+
+/* =====================================================
+   HOOGTE
+===================================================== */
+
+function updateWorldHeight(){
+
+  world.position.y=
+  worldHeight;
+
+
+  updateSettingsText();
+
+}
+
+
+function updateSettingsText(){
+
+  /*
+     Later kunnen we hier echte
+     +/- knoppen aan koppelen.
+  */
 
 }
 
@@ -1394,8 +1913,12 @@ function updateCars(){
 
       car.t+=car.speed;
 
-      if(car.t>=1)
+
+      if(car.t>=1){
+
         car.t-=1;
+
+      }
 
 
       const p=
@@ -1411,9 +1934,13 @@ function updateCars(){
 
 
       car.mesh.position.set(
+
         p.x,
+
         .32,
+
         p.z
+
       );
 
 
@@ -1435,16 +1962,17 @@ function updateCars(){
 
 async function checkXR(){
 
-  status.textContent =
-    "WebXR controleren...";
+  status.textContent=
+  "WebXR controleren...";
 
 
   if(!navigator.xr){
 
-    status.textContent =
-      "WebXR niet beschikbaar.";
+    status.textContent=
+    "WebXR niet beschikbaar.";
 
     return false;
+
   }
 
 
@@ -1458,39 +1986,45 @@ async function checkXR(){
       ),
 
       new Promise(
-        (_, reject) =>
-          setTimeout(
-            () => reject(
-              new Error(
-                "WebXR timeout"
-              )
-            ),
-            5000
-          )
+        (_,reject)=>
+
+        setTimeout(
+          ()=>reject(
+            new Error(
+              "WebXR timeout"
+            )
+          ),
+          5000
+        )
+
       )
 
     ]);
 
 
-    status.textContent =
-      supported
-      ? "✓ Quest 3 immersive AR beschikbaar"
-      : "Immersive AR niet beschikbaar.";
+    status.textContent=
+
+    supported
+
+    ? "✓ Quest 3 immersive AR beschikbaar"
+
+    : "Immersive AR niet beschikbaar.";
 
 
     return supported;
 
   }
+
   catch(error){
 
-    console.error(
+    console.warn(
       "WebXR controle:",
       error
     );
 
 
-    status.textContent =
-      "WebXR klaar — probeer Immersive";
+    status.textContent=
+    "WebXR klaar — probeer Immersive";
 
 
     return true;
@@ -1501,28 +2035,30 @@ async function checkXR(){
 
 
 /* =====================================================
-   START
+   START IMMERSIVE
 ===================================================== */
 
 document.getElementById(
   "start"
 ).onclick=
+
 async()=>{
 
-  status.textContent =
-    "Immersive starten...";
+  status.textContent=
+  "Immersive starten...";
+
+
+  if(!navigator.xr){
+
+    status.textContent=
+    "Deze browser ondersteunt geen WebXR.";
+
+    return;
+
+  }
 
 
   try{
-
-    if(!navigator.xr){
-
-      throw new Error(
-        "WebXR is niet beschikbaar."
-      );
-
-    }
-
 
     const session =
     await navigator.xr.requestSession(
@@ -1534,9 +2070,13 @@ async()=>{
         requiredFeatures:[],
 
         optionalFeatures:[
+
           "local-floor",
+
           "hand-tracking",
+
           "bounded-floor"
+
         ]
 
       }
@@ -1549,8 +2089,23 @@ async()=>{
     );
 
 
-    menu.style.display =
+    menu.style.display=
     "none";
+
+
+    session.addEventListener(
+      "end",
+      ()=>{
+
+        menu.style.display=
+        "flex";
+
+
+        status.textContent=
+        "Immersive sessie beëindigd.";
+
+      }
+    );
 
 
     renderer.setAnimationLoop(
@@ -1578,17 +2133,18 @@ async()=>{
       }
     );
 
-
   }
+
   catch(error){
 
     console.error(
-      "Immersive start error:",
+      "Immersive starten:",
       error
     );
 
-    status.textContent =
-      "Immersive starten mislukt.";
+
+    status.textContent=
+    "Immersive starten mislukt.";
 
   }
 
@@ -1596,18 +2152,18 @@ async()=>{
 
 
 /* =====================================================
-   MENU KNOPPEN
+   MENU BUTTONS
 ===================================================== */
 
 document.getElementById(
   "tv"
-).onclick =
+).onclick=
 openF1TV;
 
 
 document.getElementById(
   "multi"
-).onclick =
+).onclick=
 openMultiView;
 
 
@@ -1619,11 +2175,13 @@ window.addEventListener(
   "resize",
   ()=>{
 
-    camera.aspect =
-    innerWidth /
+    camera.aspect=
+    innerWidth/
     innerHeight;
 
+
     camera.updateProjectionMatrix();
+
 
     renderer.setSize(
       innerWidth,
@@ -1635,7 +2193,7 @@ window.addEventListener(
 
 
 /* =====================================================
-   START WEBXR CONTROLE
+   START
 ===================================================== */
 
 checkXR();
