@@ -1453,18 +1453,14 @@ vrButton(
 );
 
 
-vrButton(
-  "⚙",
-  "SETTINGS",
-  [-2.15,-.08,-.55],
-  "settings"
-);
 
 
+
+const btnClose =
 vrButton(
   "×",
   "CLOSE F1",
-  [-2.15,-.44,-.55],
+  [-2.15,.06,-.55],
   "close"
 );
 
@@ -1887,20 +1883,6 @@ function toggleMultiView(){
 /* =====================================================
    SETTINGS
 ===================================================== */
-
-let settingsVisible=false;
-
-
-function toggleSettings(){
-
-  settingsVisible=
-  !settingsVisible;
-
-
-  settingsPanel.visible=
-  settingsVisible;
-
-}
 
 
 /* =====================================================
