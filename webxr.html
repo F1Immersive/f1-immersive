@@ -1235,11 +1235,11 @@ function panel(
 
     new THREE.MeshBasicMaterial({
 
-      color:0x3b3f43,
+      color:0x30343a,
 
       transparent:true,
 
-      opacity:.92
+      opacity:.88
 
     })
 
@@ -1261,14 +1261,17 @@ function panel(
 
     new THREE.MeshBasicMaterial({
 
-      map:
-      texture(
-        title,
-        rows,
-        accent
-      )
+  map:
+  texture(
+    title,
+    rows,
+    accent
+  ),
 
-    })
+  transparent:true,
+
+  opacity:.97
+})
 
   );
 
