@@ -2,127 +2,61 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-
-<meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<title>F1 Immersive</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>F1 Immersive v0.4</title>
 
 <style>
-
-html,
-body{
+html,body{
   margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
-
   background:#000;
   color:#fff;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
-}
-
-body{
-  touch-action:none;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 #menu{
   position:fixed;
   inset:0;
   z-index:20;
-
   display:flex;
   align-items:center;
   justify-content:center;
-
   background:
-    radial-gradient(
-      circle at 50% 35%,
-      #25282c 0%,
-      #0b0c0e 58%,
-      #000 100%
-    );
+    radial-gradient(circle at 50% 35%,#25282c,#08090a 65%,#000);
 }
 
 .card{
-  width:min(86vw,440px);
-
+  width:min(88vw,460px);
   padding:34px;
-
   text-align:center;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(25,27,30,.96),
-      rgba(8,9,10,.96)
-    );
-
-  border:1px solid rgba(255,255,255,.12);
-
-  border-radius:26px;
-
-  box-shadow:
-    0 25px 90px rgba(0,0,0,.85),
-    inset 0 1px 0 rgba(255,255,255,.04);
-}
-
-.logoLine{
-  width:52px;
-  height:4px;
-
-  margin:0 auto 18px;
-
-  background:#e10600;
-
-  border-radius:5px;
-
-  box-shadow:
-    0 0 18px rgba(225,6,0,.45);
+  background:rgba(12,14,16,.92);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:24px;
+  box-shadow:0 25px 90px rgba(0,0,0,.8);
 }
 
 .card h1{
   margin:0 0 8px;
-
-  font-size:36px;
-  font-weight:800;
-
-  letter-spacing:4px;
+  font-size:38px;
+  letter-spacing:3px;
 }
 
 .card p{
-  margin:0 0 26px;
-
-  color:#9da2a7;
-
-  font-size:14px;
-  line-height:1.6;
+  color:#aeb2b6;
+  margin-bottom:25px;
 }
 
 button{
-  border:1px solid rgba(255,255,255,.14);
-
-  border-radius:13px;
-
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:12px;
   padding:14px 22px;
-
   margin:5px;
-
   background:#e10600;
-
   color:#fff;
-
-  font-size:14px;
-
-  font-weight:700;
-
-  letter-spacing:.5px;
-
-  cursor:pointer;
+  font-size:15px;
+  font-weight:bold;
 }
 
 button.secondary{
@@ -131,44 +65,30 @@ button.secondary{
 
 #status{
   margin-top:15px;
-
-  color:#92979c;
-
-  font-size:12px;
+  color:#aaa;
+  font-size:13px;
 }
 
 canvas{
   position:fixed;
   inset:0;
-
   width:100%;
   height:100%;
-
-  display:block;
 }
-
 </style>
 </head>
 
-
 <body>
-
-
-<!-- =====================================================
-     START MENU
-===================================================== -->
 
 <div id="menu">
 
   <div class="card">
 
-    <div class="logoLine"></div>
-
     <h1>F1 IMMERSIVE</h1>
 
     <p>
       Spatial Formula 1<br>
-      Designed for Meta Quest 3
+      Meta Quest 3
     </p>
 
     <button id="start">
@@ -191,9 +111,7 @@ canvas{
 
 </div>
 
-
 <canvas id="c"></canvas>
-
 
 <script type="module">
 
@@ -242,18 +160,12 @@ renderer.setPixelRatio(
   Math.min(devicePixelRatio,2)
 );
 
-
 renderer.setSize(
   innerWidth,
   innerHeight
 );
 
-
-renderer.xr.enabled=true;
-
-
-renderer.outputColorSpace =
-THREE.SRGBColorSpace;
+renderer.xr.enabled = true;
 
 
 /* =====================================================
@@ -261,13 +173,11 @@ THREE.SRGBColorSpace;
 ===================================================== */
 
 scene.add(
-
   new THREE.HemisphereLight(
     0xffffff,
-    0x202020,
+    0x303030,
     3
   )
-
 );
 
 
@@ -277,77 +187,42 @@ new THREE.DirectionalLight(
   3
 );
 
-
 light.position.set(
   4,
   8,
   5
 );
 
-
 scene.add(light);
 
 
 /* =====================================================
    WERELD
+   NIET AANPASSEN
+   Dit is de werkende verhouding van v0.3
 ===================================================== */
 
 const world =
 new THREE.Group();
 
 
-/*
-   DE HELE OPSTELLING STAAT NU LAGER.
-
-   Deze waarde kunnen we later
-   vanuit SETTINGS aanpassen.
-*/
-
-let worldHeight = 0.78;
-
-
 world.position.set(
   0,
-  worldHeight,
+  1.05,
   -3.25
 );
 
 
-/*
-   Algemene schaal van de interface.
-*/
-
-world.scale.setScalar(.48);
+world.scale.setScalar(
+  .48
+);
 
 
 scene.add(world);
 
 
 /* =====================================================
-   TRACK GROUP
-===================================================== */
-
-/*
-   BELANGRIJK:
-
-   De baan heeft nu zijn eigen schaal.
-
-   Hierdoor worden de panelen NIET kleiner
-   wanneer we de baan kleiner maken.
-*/
-
-const trackWorld =
-new THREE.Group();
-
-
-trackWorld.scale.setScalar(.55);
-
-
-world.add(trackWorld);
-
-
-/* =====================================================
-   BAAN BASIS
+   BAAN
 ===================================================== */
 
 const base =
@@ -370,14 +245,15 @@ new THREE.Mesh(
 );
 
 
-base.position.y=-.17;
+base.position.y =
+-.17;
 
 
-trackWorld.add(base);
+world.add(base);
 
 
 /* =====================================================
-   GROEN PLATFORM
+   GRAS
 ===================================================== */
 
 const grass =
@@ -400,45 +276,18 @@ new THREE.Mesh(
 );
 
 
-grass.position.y=-.08;
+grass.position.y =
+-.08;
 
 
-trackWorld.add(grass);
-
-
-/* =====================================================
-   RODE RAND ONDER PLATFORM
-===================================================== */
-
-const redBase =
-new THREE.Mesh(
-
-  new THREE.BoxGeometry(
-    4.18,
-    .035,
-    2.28
-  ),
-
-  new THREE.MeshBasicMaterial({
-
-    color:0xe10600
-
-  })
-
-);
-
-
-redBase.position.y=-.245;
-
-
-trackWorld.add(redBase);
+world.add(grass);
 
 
 /* =====================================================
    CIRCUIT
 ===================================================== */
 
-const points=[
+const points = [
 
   [-1.65,-.45],
 
@@ -507,14 +356,15 @@ new THREE.Mesh(
 );
 
 
-road.position.y=.05;
+road.position.y =
+.05;
 
 
-trackWorld.add(road);
+world.add(road);
 
 
 /* =====================================================
-   WITTE RAND
+   WITTE LIJN
 ===================================================== */
 
 const line =
@@ -537,30 +387,21 @@ new THREE.Mesh(
 );
 
 
-line.position.y=.275;
+line.position.y =
+.275;
 
 
-trackWorld.add(line);
+world.add(line);
 
 
 /* =====================================================
    KERBS
 ===================================================== */
 
-for(
-  let i=0;
-  i<90;
-  i++
-){
+for(let i=0;i<90;i++){
 
   const p =
   track.getPointAt(
-    i/90
-  );
-
-
-  const tangent =
-  track.getTangentAt(
     i/90
   );
 
@@ -587,20 +428,17 @@ for(
 
 
   kerb.position.set(
+
     p.x,
+
     .29,
+
     p.z
+
   );
 
 
-  kerb.rotation.y =
-  Math.atan2(
-    tangent.x,
-    tangent.z
-  );
-
-
-  trackWorld.add(kerb);
+  world.add(kerb);
 
 }
 
@@ -609,15 +447,22 @@ for(
    AUTO'S
 ===================================================== */
 
-const carColors=[
+const carColors = [
 
   0xe10600,
+
   0x1677ff,
+
   0xffd400,
+
   0x00c878,
+
   0xffffff,
+
   0xff7a00,
+
   0xb05cff,
+
   0x55c7ff
 
 ];
@@ -635,14 +480,12 @@ function createCar(color){
   const material =
   new THREE.MeshStandardMaterial({
 
-    color:color,
+    color,
 
     roughness:.35
 
   });
 
-
-  /* body */
 
   const body =
   new THREE.Mesh(
@@ -661,8 +504,6 @@ function createCar(color){
   g.add(body);
 
 
-  /* nose */
-
   const nose =
   new THREE.Mesh(
 
@@ -677,13 +518,12 @@ function createCar(color){
   );
 
 
-  nose.position.z=-.23;
+  nose.position.z =
+  -.23;
 
 
   g.add(nose);
 
-
-  /* front wing */
 
   const frontWing =
   new THREE.Mesh(
@@ -703,13 +543,12 @@ function createCar(color){
   );
 
 
-  frontWing.position.z=-.30;
+  frontWing.position.z =
+  -.30;
 
 
   g.add(frontWing);
 
-
-  /* rear wing */
 
   const rearWing =
   new THREE.Mesh(
@@ -729,7 +568,8 @@ function createCar(color){
   );
 
 
-  rearWing.position.z=.17;
+  rearWing.position.z =
+  .17;
 
 
   g.add(rearWing);
@@ -740,11 +580,7 @@ function createCar(color){
 }
 
 
-for(
-  let i=0;
-  i<8;
-  i++
-){
+for(let i=0;i<8;i++){
 
   const car =
   createCar(
@@ -752,7 +588,7 @@ for(
   );
 
 
-  trackWorld.add(car);
+  world.add(car);
 
 
   cars.push({
@@ -762,8 +598,7 @@ for(
     t:i/8,
 
     speed:
-    .00072 -
-    i*.000014
+    .00072-i*.000014
 
   });
 
@@ -775,9 +610,13 @@ for(
 ===================================================== */
 
 function texture(
+
   title,
+
   rows,
+
   accent="#e10600"
+
 ){
 
   const canvas =
@@ -786,17 +625,23 @@ function texture(
   );
 
 
-  canvas.width=900;
-  canvas.height=520;
+  canvas.width =
+  900;
+
+  canvas.height =
+  520;
 
 
   const ctx =
-  canvas.getContext("2d");
+  canvas.getContext(
+    "2d"
+  );
 
 
   /* achtergrond */
 
-  ctx.fillStyle="#101214";
+  ctx.fillStyle =
+  "#15181b";
 
 
   ctx.fillRect(
@@ -807,40 +652,42 @@ function texture(
   );
 
 
-  /* bovenste glans */
+  /* bovenbalk */
 
-  ctx.fillStyle=
-  "rgba(255,255,255,.025)";
+  ctx.fillStyle =
+  "#1b1f23";
 
 
   ctx.fillRect(
     0,
     0,
     900,
-    90
+    82
   );
 
 
-  /* F1 accent */
+  /* rode F1 lijn */
 
-  ctx.fillStyle=accent;
+  ctx.fillStyle =
+  accent;
 
 
   ctx.fillRect(
     0,
     0,
-    8,
+    7,
     520
   );
 
 
   /* titel */
 
-  ctx.fillStyle="#ffffff";
+  ctx.fillStyle =
+  "#ffffff";
 
 
-  ctx.font=
-  "bold 34px Arial";
+  ctx.font =
+  "bold 36px Arial";
 
 
   ctx.fillText(
@@ -850,13 +697,10 @@ function texture(
   );
 
 
-  /* horizontale lijn */
+  /* lijn */
 
-  ctx.strokeStyle=
-  "rgba(255,255,255,.14)";
-
-
-  ctx.lineWidth=1;
+  ctx.strokeStyle =
+  "rgba(255,255,255,.13)";
 
 
   ctx.beginPath();
@@ -877,19 +721,26 @@ function texture(
   ctx.stroke();
 
 
-  /* regels */
-
-  ctx.font=
-  "22px Arial";
-
+  /* tekst */
 
   rows.forEach(
+
     (row,i)=>{
+
+      if(!row)
+        return;
+
 
       ctx.fillStyle =
       i===0
       ? "#ffffff"
       : "#b9bec3";
+
+
+      ctx.font =
+      i===0
+      ? "bold 22px Arial"
+      : "22px Arial";
 
 
       ctx.fillText(
@@ -899,6 +750,7 @@ function texture(
       );
 
     }
+
   );
 
 
@@ -913,17 +765,22 @@ function texture(
    PANELEN
 ===================================================== */
 
-const panelObjects=[];
-
-
 function panel(
+
   title,
+
   rows,
+
   width,
+
   height,
+
   position,
+
   rotation=0,
+
   accent="#e10600"
+
 ){
 
   const group =
@@ -935,7 +792,7 @@ function panel(
   );
 
 
-  group.rotation.y=
+  group.rotation.y =
   rotation;
 
 
@@ -945,17 +802,20 @@ function panel(
   new THREE.Mesh(
 
     new THREE.PlaneGeometry(
+
       width+.045,
+
       height+.045
+
     ),
 
     new THREE.MeshBasicMaterial({
 
-      color:0x3b3f43,
+      color:0x3d4145,
 
       transparent:true,
 
-      opacity:.92
+      opacity:.88
 
     })
 
@@ -971,8 +831,11 @@ function panel(
   new THREE.Mesh(
 
     new THREE.PlaneGeometry(
+
       width,
+
       height
+
     ),
 
     new THREE.MeshBasicMaterial({
@@ -989,7 +852,8 @@ function panel(
   );
 
 
-  screen.position.z=-.03;
+  screen.position.z =
+  -.03;
 
 
   group.add(screen);
@@ -998,209 +862,25 @@ function panel(
   world.add(group);
 
 
-  panelObjects.push(group);
-
-
   return group;
 
 }
 
 
 /* =====================================================
-   HOOFDSCHERM
-===================================================== */
-
-const mainPanel =
-panel(
-
-  "F1 TV",
-
-  [
-
-    "LIVE RACE",
-    "MAIN BROADCAST",
-    "F1 TV ACCOUNT",
-    "",
-    "SELECT F1 TV"
-
-  ],
-
-  3.65,
-  1.90,
-
-  [0,1.45,-1.05]
-
-);
-
-
-/* =====================================================
-   LIVE TIMING
-===================================================== */
-
-const timingPanel =
-panel(
-
-  "LIVE TIMING",
-
-  [
-
-    "P1  VER   +0.000",
-    "P2  LEC   +2.735",
-    "P3  NOR   +3.219",
-    "P4  PIA   +4.669",
-    "P5  HAM   +5.601",
-    "",
-    "LAP 18 / 72"
-
-  ],
-
-  1.20,
-  1.25,
-
- [2.60,1.45,-.80],
-
-  -.10
-
-);
-
-
-/* =====================================================
-   MULTIVIEW
-===================================================== */
-
-const multiPanel =
-panel(
-
-  "MULTIVIEW",
-
-  [
-
-    "MAIN FEED",
-    "ONBOARD",
-    "TRACK CAMERA",
-    "DRIVER CAMERA",
-    "",
-    "SELECT MULTIVIEW"
-
-  ],
-
-  1.20,
-  1.08,
-
- [2.60,.10,-.80],
-
-  -.08
-
-);
-
-
-/* =====================================================
-   SETTINGS
-===================================================== */
-
-const settingsPanel =
-panel(
-
-  "SETTINGS",
-
-  [
-
-    "HEIGHT       0.78 m",
-    "SHOW TIMING",
-    "SHOW MULTIVIEW",
-    "HAND TRACKING",
-    "",
-    "SYSTEM READY"
-
-  ],
-
-  1.55,
-  1.30,
-
-  [-.15,.05,-.60],
-
-  0
-
-);
-
-
-settingsPanel.visible=false;
-
-
-/* =====================================================
-   INTERACTIEVE OBJECTEN
-===================================================== */
-
-const interactiveObjects=[];
-
-
-/* =====================================================
-   TEXTURE VOOR KNOP
-===================================================== */
-
-function createTextTexture(
-  text,
-  fontSize=44
-){
-
-  const canvas =
-  document.createElement(
-    "canvas"
-  );
-
-
-  canvas.width=600;
-  canvas.height=140;
-
-
-  const ctx =
-  canvas.getContext("2d");
-
-
-  ctx.clearRect(
-    0,
-    0,
-    600,
-    140
-  );
-
-
-  ctx.fillStyle="#ffffff";
-
-
-  ctx.font=
-  `bold ${fontSize}px Arial`;
-
-
-  ctx.textAlign="left";
-
-
-  ctx.textBaseline="middle";
-
-
-  ctx.fillText(
-    text,
-    15,
-    70
-  );
-
-
-  return new THREE.CanvasTexture(
-    canvas
-  );
-
-}
-
-
-/* =====================================================
-   VR BUTTON
+   VR KNOP
 ===================================================== */
 
 function vrButton(
+
   icon,
+
   label,
+
   position,
+
   action
+
 ){
 
   const group =
@@ -1212,13 +892,13 @@ function vrButton(
   );
 
 
-  /* achtergrond */
+  /* ronde knop */
 
   const background =
   new THREE.Mesh(
 
     new THREE.CircleGeometry(
-      .105,
+      .115,
       32
     ),
 
@@ -1228,7 +908,7 @@ function vrButton(
 
       transparent:true,
 
-      opacity:.97
+      opacity:.96
 
     })
 
@@ -1238,20 +918,20 @@ function vrButton(
   group.add(background);
 
 
-  /* rode ring */
+  /* ring */
 
   const ring =
   new THREE.Mesh(
 
     new THREE.RingGeometry(
-      .105,
-      .118,
+      .115,
+      .127,
       32
     ),
 
     new THREE.MeshBasicMaterial({
 
-      color:0x4d5155
+      color:0x55585c
 
     })
 
@@ -1263,21 +943,26 @@ function vrButton(
 
   /* icoon */
 
-  const iconCanvas =
+  const c =
   document.createElement(
     "canvas"
   );
 
 
-  iconCanvas.width=256;
-  iconCanvas.height=256;
+  c.width =
+  256;
+
+  c.height =
+  256;
 
 
-  const iconCtx =
-  iconCanvas.getContext("2d");
+  const ctx =
+  c.getContext(
+    "2d"
+  );
 
 
-  iconCtx.clearRect(
+  ctx.clearRect(
     0,
     0,
     256,
@@ -1285,29 +970,32 @@ function vrButton(
   );
 
 
-  iconCtx.fillStyle="#ffffff";
+  ctx.fillStyle =
+  "#ffffff";
 
 
-  iconCtx.font=
+  ctx.font =
   "bold 82px Arial";
 
 
-  iconCtx.textAlign="center";
+  ctx.textAlign =
+  "center";
 
 
-  iconCtx.textBaseline="middle";
+  ctx.textBaseline =
+  "middle";
 
 
-  iconCtx.fillText(
+  ctx.fillText(
     icon,
     128,
     128
   );
 
 
-  const iconTexture =
+  const tex =
   new THREE.CanvasTexture(
-    iconCanvas
+    c
   );
 
 
@@ -1316,7 +1004,7 @@ function vrButton(
 
     new THREE.SpriteMaterial({
 
-      map:iconTexture,
+      map:tex,
 
       transparent:true
 
@@ -1326,13 +1014,14 @@ function vrButton(
 
 
   sprite.scale.set(
-    .12,
-    .12,
-    .12
+    .13,
+    .13,
+    .13
   );
 
 
-  sprite.position.z=-.02;
+  sprite.position.z =
+  -.02;
 
 
   group.add(sprite);
@@ -1340,10 +1029,51 @@ function vrButton(
 
   /* label */
 
-  const labelTexture =
-  createTextTexture(
+  const labelCanvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  labelCanvas.width =
+  500;
+
+  labelCanvas.height =
+  120;
+
+
+  const labelCtx =
+  labelCanvas.getContext(
+    "2d"
+  );
+
+
+  labelCtx.fillStyle =
+  "#ffffff";
+
+
+  labelCtx.font =
+  "bold 48px Arial";
+
+
+  labelCtx.textAlign =
+  "left";
+
+
+  labelCtx.textBaseline =
+  "middle";
+
+
+  labelCtx.fillText(
     label,
-    40
+    15,
+    60
+  );
+
+
+  const labelTexture =
+  new THREE.CanvasTexture(
+    labelCanvas
   );
 
 
@@ -1362,14 +1092,14 @@ function vrButton(
 
 
   labelSprite.scale.set(
-    .45,
-    .105,
-    .105
+    .52,
+    .125,
+    .125
   );
 
 
   labelSprite.position.set(
-    .29,
+    .34,
     0,
     0
   );
@@ -1378,13 +1108,13 @@ function vrButton(
   group.add(labelSprite);
 
 
-  /* hit area */
+  /* klikzone */
 
   const hit =
   new THREE.Mesh(
 
     new THREE.CircleGeometry(
-      .16,
+      .17,
       32
     ),
 
@@ -1399,22 +1129,24 @@ function vrButton(
   );
 
 
-  hit.userData.action=
+  hit.userData.action =
   action;
 
 
-  hit.userData.label=
+  hit.userData.label =
   label;
 
 
-  hit.userData.group=
+  hit.userData.group =
   group;
 
 
   group.add(hit);
 
 
-  interactiveObjects.push(hit);
+  interactiveObjects.push(
+    hit
+  );
 
 
   world.add(group);
@@ -1426,39 +1158,178 @@ function vrButton(
 
 
 /* =====================================================
-   LINKER MENU
+   INTERACTIEVE OBJECTEN
 ===================================================== */
 
-vrButton(
-  "▶",
+const interactiveObjects=[];
+
+
+/* =====================================================
+   PANELEN
+===================================================== */
+
+/*
+   Groot scherm
+*/
+
+const mainPanel =
+panel(
+
   "F1 TV",
-  [-2.15,1.00,-.55],
-  "tv"
+
+  [
+
+    "LIVE RACE",
+
+    "MAIN BROADCAST",
+
+    "F1 TV ACCOUNT",
+
+    "",
+
+    "SELECT F1 TV"
+
+  ],
+
+  4.10,
+
+  2.15,
+
+  [0,1.55,-1.05]
+
 );
 
 
-vrButton(
-  "▦",
+/*
+   Timing rechts
+   Zelfde diepte als groot scherm
+*/
+
+const timingPanel =
+panel(
+
+  "LIVE TIMING",
+
+  [
+
+    "P1  VER   +0.000",
+
+    "P2  LEC   +2.735",
+
+    "P3  NOR   +3.219",
+
+    "P4  PIA   +4.669",
+
+    "P5  HAM   +5.601",
+
+    "",
+
+    "LAP 18 / 72"
+
+  ],
+
+  1.35,
+
+  1.35,
+
+  [2.05,1.00,-1.05]
+
+);
+
+
+/*
+   Multiview rechts
+   Zelfde diepte als groot scherm
+*/
+
+const multiPanel =
+panel(
+
   "MULTIVIEW",
-  [-2.15,.64,-.55],
+
+  [
+
+    "MAIN FEED",
+
+    "ONBOARD",
+
+    "TRACK CAMERA",
+
+    "DRIVER CAMERA",
+
+    "",
+
+    "SELECT MULTIVIEW"
+
+  ],
+
+  1.35,
+
+  1.15,
+
+  [2.05,-.48,-1.05]
+
+);
+
+
+/* =====================================================
+   LINKER KNOPPEN
+   SETTINGS IS VERWIJDERD
+===================================================== */
+
+const btnTV =
+vrButton(
+
+  "▶",
+
+  "F1 TV",
+
+  [-2.15,1.05,-.55],
+
+  "tv"
+
+);
+
+
+const btnMulti =
+vrButton(
+
+  "▦",
+
+  "MULTIVIEW",
+
+  [-2.15,.68,-.55],
+
   "multi"
+
 );
 
 
+const btnTiming =
 vrButton(
+
   "◉",
+
   "TIMING",
-  [-2.15,.28,-.55],
+
+  [-2.15,.31,-.55],
+
   "timing"
+
 );
 
 
-
+const btnClose =
 vrButton(
+
   "×",
+
   "CLOSE F1",
-  [-2.15,-.08,-.55],
+
+  [-2.15,-.06,-.55],
+
   "close"
+
 );
 
 
@@ -1475,12 +1346,10 @@ new THREE.Matrix4();
 
 
 /* =====================================================
-   CONTROLLERS
+   CONTROLLER
 ===================================================== */
 
-function setupController(
-  index
-){
+function setupController(index){
 
   const controller =
   renderer.xr.getController(
@@ -1491,22 +1360,20 @@ function setupController(
   scene.add(controller);
 
 
-  /* pointer */
+  /*
+     Rode richtlijn
+  */
 
   const lineGeometry =
   new THREE.BufferGeometry()
   .setFromPoints([
 
     new THREE.Vector3(
-      0,
-      0,
-      0
+      0,0,0
     ),
 
     new THREE.Vector3(
-      0,
-      0,
-      -3
+      0,0,-3
     )
 
   ]);
@@ -1534,7 +1401,9 @@ function setupController(
 
 
   controller.addEventListener(
+
     "selectstart",
+
     ()=>{
 
       selectController(
@@ -1542,6 +1411,7 @@ function setupController(
       );
 
     }
+
   );
 
 
@@ -1560,48 +1430,50 @@ const controllers=[
 
 
 /* =====================================================
-   RAYCAST
+   RAYCAST CONTROLLER
 ===================================================== */
 
 function getControllerHits(
   controller
 ){
 
-  tempMatrix.identity();
-
-
-  tempMatrix.extractRotation(
-    controller.matrixWorld
-  );
+  tempMatrix
+    .identity()
+    .extractRotation(
+      controller.matrixWorld
+    );
 
 
   raycaster.ray.origin
-  .setFromMatrixPosition(
-    controller.matrixWorld
-  );
+    .setFromMatrixPosition(
+      controller.matrixWorld
+    );
 
 
   raycaster.ray.direction
-  .set(
-    0,
-    0,
-    -1
-  )
-  .applyMatrix4(
-    tempMatrix
-  );
+    .set(
+      0,
+      0,
+      -1
+    )
+    .applyMatrix4(
+      tempMatrix
+    );
 
 
   return raycaster.intersectObjects(
+
     interactiveObjects,
+
     false
+
   );
 
 }
 
 
 /* =====================================================
-   SELECT
+   SELECTIE
 ===================================================== */
 
 function selectController(
@@ -1619,41 +1491,26 @@ function selectController(
 
 
   const action =
-  hits[0].object.userData.action;
+  hits[0]
+  .object
+  .userData
+  .action;
 
 
-  switch(action){
-
-    case "tv":
-
-      openF1TV();
-
-      break;
+  if(action==="tv")
+    openF1TV();
 
 
-    case "multi":
-
-      openMultiView();
-
-      break;
+  if(action==="multi")
+    openMultiView();
 
 
-    case "timing":
-
-      toggleTiming();
-
-      break;
+  if(action==="timing")
+    toggleTiming();
 
 
-   
-
-    case "close":
-
-      closeF1Windows();
-
-      break;
-
-  }
+  if(action==="close")
+    closeF1Windows();
 
 }
 
@@ -1673,6 +1530,7 @@ function highlightController(
 
 
   interactiveObjects.forEach(
+
     object=>{
 
       const group =
@@ -1686,19 +1544,23 @@ function highlightController(
       if(ring){
 
         ring.material.color.set(
-          0x4d5155
+          0x55585c
         );
 
       }
 
     }
+
   );
 
 
   if(hits.length){
 
     const group =
-    hits[0].object.userData.group;
+    hits[0]
+    .object
+    .userData
+    .group;
 
 
     const ring =
@@ -1719,19 +1581,25 @@ function highlightController(
 
 
 /* =====================================================
-   F1 TV
+   F1 TV WINDOWS
 ===================================================== */
 
-let f1TVWindow=null;
+let f1TVWindow =
+null;
 
-let multiViewWindow=null;
+
+let multiViewWindow =
+null;
 
 
 function openF1TV(){
 
   if(
+
     f1TVWindow &&
+
     !f1TVWindow.closed
+
   ){
 
     f1TVWindow.focus();
@@ -1769,8 +1637,11 @@ function openF1TV(){
 function openMultiView(){
 
   if(
+
     multiViewWindow &&
+
     !multiViewWindow.closed
+
   ){
 
     multiViewWindow.focus();
@@ -1808,8 +1679,11 @@ function openMultiView(){
 function closeF1Windows(){
 
   if(
+
     f1TVWindow &&
+
     !f1TVWindow.closed
+
   ){
 
     f1TVWindow.close();
@@ -1818,8 +1692,11 @@ function closeF1Windows(){
 
 
   if(
+
     multiViewWindow &&
+
     !multiViewWindow.closed
+
   ){
 
     multiViewWindow.close();
@@ -1827,9 +1704,12 @@ function closeF1Windows(){
   }
 
 
-  f1TVWindow=null;
+  f1TVWindow =
+  null;
 
-  multiViewWindow=null;
+
+  multiViewWindow =
+  null;
 
 }
 
@@ -1838,96 +1718,47 @@ function closeF1Windows(){
    TIMING
 ===================================================== */
 
-let timingVisible=true;
+let timingVisible =
+true;
 
 
 function toggleTiming(){
 
-  timingVisible=
+  timingVisible =
   !timingVisible;
 
 
-  timingPanel.visible=
+  timingPanel.visible =
   timingVisible;
 
 }
 
 
 /* =====================================================
-   MULTIVIEW
-===================================================== */
-
-let multiVisible=true;
-
-
-function toggleMultiView(){
-
-  multiVisible=
-  !multiVisible;
-
-
-  multiPanel.visible=
-  multiVisible;
-
-}
-
-
-/* =====================================================
-   SETTINGS
-===================================================== */
-
-
-/* =====================================================
-   HOOGTE
-===================================================== */
-
-function updateWorldHeight(){
-
-  world.position.y=
-  worldHeight;
-
-
-  updateSettingsText();
-
-}
-
-
-function updateSettingsText(){
-
-  /*
-     Later kunnen we hier echte
-     +/- knoppen aan koppelen.
-  */
-
-}
-
-
-/* =====================================================
-   AUTO'S
+   AUTO'S UPDATE
 ===================================================== */
 
 function updateCars(){
 
   cars.forEach(
+
     car=>{
 
-      car.t+=car.speed;
+      car.t +=
+      car.speed;
 
 
-      if(car.t>=1){
-
+      if(car.t>=1)
         car.t-=1;
 
-      }
 
-
-      const p=
+      const p =
       track.getPointAt(
         car.t
       );
 
 
-      const tangent=
+      const tangent =
       track.getTangentAt(
         car.t
       );
@@ -1944,13 +1775,17 @@ function updateCars(){
       );
 
 
-      car.mesh.rotation.y=
+      car.mesh.rotation.y =
       Math.atan2(
+
         tangent.x,
+
         tangent.z
+
       );
 
     }
+
   );
 
 }
@@ -1962,14 +1797,15 @@ function updateCars(){
 
 async function checkXR(){
 
-  status.textContent=
+  status.textContent =
   "WebXR controleren...";
 
 
   if(!navigator.xr){
 
-    status.textContent=
+    status.textContent =
     "WebXR niet beschikbaar.";
+
 
     return false;
 
@@ -1986,44 +1822,53 @@ async function checkXR(){
       ),
 
       new Promise(
+
         (_,reject)=>
 
-        setTimeout(
-          ()=>reject(
-            new Error(
-              "WebXR timeout"
-            )
-          ),
-          5000
-        )
+          setTimeout(
+
+            ()=>reject(
+              new Error(
+                "WebXR timeout"
+              )
+            ),
+
+            5000
+
+          )
 
       )
 
     ]);
 
 
-    status.textContent=
+    status.textContent =
 
-    supported
+      supported
 
-    ? "✓ Quest 3 immersive AR beschikbaar"
+      ?
 
-    : "Immersive AR niet beschikbaar.";
+      "✓ Quest 3 immersive AR beschikbaar"
+
+      :
+
+      "Immersive AR niet beschikbaar.";
 
 
     return supported;
 
   }
 
+
   catch(error){
 
-    console.warn(
+    console.error(
       "WebXR controle:",
       error
     );
 
 
-    status.textContent=
+    status.textContent =
     "WebXR klaar — probeer Immersive";
 
 
@@ -2035,30 +1880,29 @@ async function checkXR(){
 
 
 /* =====================================================
-   START IMMERSIVE
+   START
 ===================================================== */
 
 document.getElementById(
   "start"
-).onclick=
+).onclick =
 
 async()=>{
 
-  status.textContent=
-  "Immersive starten...";
-
-
-  if(!navigator.xr){
-
-    status.textContent=
-    "Deze browser ondersteunt geen WebXR.";
-
-    return;
-
-  }
+  status.textContent =
+  "START knop werkt!";
 
 
   try{
+
+    if(!navigator.xr){
+
+      throw new Error(
+        "WebXR niet beschikbaar"
+      );
+
+    }
+
 
     const session =
     await navigator.xr.requestSession(
@@ -2089,32 +1933,19 @@ async()=>{
     );
 
 
-    menu.style.display=
+    menu.style.display =
     "none";
 
 
-    session.addEventListener(
-      "end",
-      ()=>{
-
-        menu.style.display=
-        "flex";
-
-
-        status.textContent=
-        "Immersive sessie beëindigd.";
-
-      }
-    );
-
-
     renderer.setAnimationLoop(
+
       ()=>{
 
         updateCars();
 
 
         controllers.forEach(
+
           controller=>{
 
             highlightController(
@@ -2122,6 +1953,7 @@ async()=>{
             );
 
           }
+
         );
 
 
@@ -2131,19 +1963,18 @@ async()=>{
         );
 
       }
+
     );
 
   }
 
+
   catch(error){
 
-    console.error(
-      "Immersive starten:",
-      error
-    );
+    console.error(error);
 
 
-    status.textContent=
+    status.textContent =
     "Immersive starten mislukt.";
 
   }
@@ -2152,18 +1983,18 @@ async()=>{
 
 
 /* =====================================================
-   MENU BUTTONS
+   MENU KNOPPEN
 ===================================================== */
 
 document.getElementById(
   "tv"
-).onclick=
+).onclick =
 openF1TV;
 
 
 document.getElementById(
   "multi"
-).onclick=
+).onclick =
 openMultiView;
 
 
@@ -2172,11 +2003,13 @@ openMultiView;
 ===================================================== */
 
 window.addEventListener(
+
   "resize",
+
   ()=>{
 
-    camera.aspect=
-    innerWidth/
+    camera.aspect =
+    innerWidth /
     innerHeight;
 
 
@@ -2184,16 +2017,20 @@ window.addEventListener(
 
 
     renderer.setSize(
+
       innerWidth,
+
       innerHeight
+
     );
 
   }
+
 );
 
 
 /* =====================================================
-   START
+   START WEBXR CHECK
 ===================================================== */
 
 checkXR();
