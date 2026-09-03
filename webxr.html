@@ -783,23 +783,42 @@ function texture(
 ){
 
   const canvas =
-  document.createElement(
-    "canvas"
-  );
-
+  document.createElement("canvas");
 
   canvas.width=900;
   canvas.height=520;
 
-
   const ctx =
   canvas.getContext("2d");
 
+  /* =================================================
+     GLASS / DARK F1 BACKGROUND
+  ================================================= */
 
-  /* achtergrond */
+  const gradient =
+  ctx.createLinearGradient(
+    0,
+    0,
+    900,
+    520
+  );
 
-  ctx.fillStyle="#101214";
+  gradient.addColorStop(
+    0,
+    "rgba(24,27,31,.96)"
+  );
 
+  gradient.addColorStop(
+    .55,
+    "rgba(10,12,15,.94)"
+  );
+
+  gradient.addColorStop(
+    1,
+    "rgba(5,6,8,.96)"
+  );
+
+  ctx.fillStyle=gradient;
 
   ctx.fillRect(
     0,
@@ -809,108 +828,371 @@ function texture(
   );
 
 
-  /* bovenste glans */
-
-  ctx.fillStyle=
-  "rgba(255,255,255,.025)";
-
-
-  ctx.fillRect(
-    0,
-    0,
-    900,
-    90
-  );
-
-
-  /* F1 accent */
+  /* =================================================
+     RED F1 EDGE
+  ================================================= */
 
   ctx.fillStyle=accent;
 
-
   ctx.fillRect(
     0,
     0,
-    8,
+    7,
     520
   );
 
 
-  /* titel */
+  /* =================================================
+     TOP LIGHT
+  ================================================= */
+
+  const glow =
+  ctx.createLinearGradient(
+    0,
+    0,
+    900,
+    0
+  );
+
+  glow.addColorStop(
+    0,
+    "rgba(255,255,255,.08)"
+  );
+
+  glow.addColorStop(
+    .5,
+    "rgba(255,255,255,.025)"
+  );
+
+  glow.addColorStop(
+    1,
+    "rgba(255,255,255,0)"
+  );
+
+  ctx.fillStyle=glow;
+
+  ctx.fillRect(
+    7,
+    0,
+    893,
+    70
+  );
+
+
+  /* =================================================
+     TITLE
+  ================================================= */
 
   ctx.fillStyle="#ffffff";
-
 
   ctx.font=
   "bold 34px Arial";
 
-
   ctx.fillText(
     title,
     35,
-    55
+    48
   );
 
 
-  /* horizontale lijn */
+  /* =================================================
+     LIVE INDICATOR
+  ================================================= */
+
+  if(title==="F1 TV"){
+
+    ctx.beginPath();
+
+    ctx.arc(
+      825,
+      37,
+      6,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fillStyle="#e10600";
+
+    ctx.fill();
+
+
+    ctx.fillStyle="#d9dde1";
+
+    ctx.font=
+    "bold 16px Arial";
+
+    ctx.fillText(
+      "LIVE",
+      840,
+      43
+    );
+
+  }
+
+
+  /* =================================================
+     DIVIDER
+  ================================================= */
 
   ctx.strokeStyle=
-  "rgba(255,255,255,.14)";
-
+  "rgba(255,255,255,.13)";
 
   ctx.lineWidth=1;
 
-
   ctx.beginPath();
-
 
   ctx.moveTo(
     35,
     78
   );
 
-
   ctx.lineTo(
     865,
     78
   );
 
-
   ctx.stroke();
 
 
-  /* regels */
+  /* =================================================
+     MAIN CONTENT
+  ================================================= */
 
-  ctx.font=
-  "22px Arial";
+  if(title==="LIVE TIMING"){
 
+    rows.forEach(
+      (row,i)=>{
 
-  rows.forEach(
-    (row,i)=>{
-
-      ctx.fillStyle =
-      i===0
-      ? "#ffffff"
-      : "#b9bec3";
+        if(row==="")
+          return;
 
 
-      ctx.fillText(
-        row,
-        35,
-        120+i*43
-      );
+        const y =
+        120+i*43;
 
-    }
+
+        /* row background */
+
+        ctx.fillStyle=
+        i%2===0
+        ? "rgba(255,255,255,.035)"
+        : "rgba(255,255,255,.015)";
+
+
+        ctx.fillRect(
+          25,
+          y-27,
+          850,
+          36
+        );
+
+
+        /* position */
+
+        ctx.fillStyle =
+        i===0
+        ? "#e10600"
+        : "#ffffff";
+
+
+        ctx.font=
+        "bold 20px Arial";
+
+
+        ctx.fillText(
+          row,
+          40,
+          y
+        );
+
+      }
+    );
+
+
+    /* lap counter */
+
+    ctx.fillStyle=
+    "#8f969d";
+
+    ctx.font=
+    "16px Arial";
+
+    ctx.fillText(
+      "RACE CONTROL",
+      40,
+      465
+    );
+
+
+    ctx.fillStyle=
+    "#ffffff";
+
+    ctx.font=
+    "bold 18px Arial";
+
+    ctx.fillText(
+      "LAP 18 / 72",
+      720,
+      465
+    );
+
+
+  }
+  else if(title==="MULTIVIEW"){
+
+    rows.forEach(
+      (row,i)=>{
+
+        if(row==="")
+          return;
+
+
+        const y =
+        120+i*43;
+
+
+        /* selection card */
+
+        ctx.fillStyle=
+        i===0
+        ? "rgba(225,6,0,.18)"
+        : "rgba(255,255,255,.035)";
+
+
+        ctx.fillRect(
+          25,
+          y-27,
+          850,
+          36
+        );
+
+
+        /* left accent */
+
+        if(i===0){
+
+          ctx.fillStyle="#e10600";
+
+          ctx.fillRect(
+            25,
+            y-27,
+            4,
+            36
+          );
+
+        }
+
+
+        ctx.fillStyle=
+        i===0
+        ? "#ffffff"
+        : "#b9bec3";
+
+
+        ctx.font=
+        i===0
+        ? "bold 20px Arial"
+        : "20px Arial";
+
+
+        ctx.fillText(
+          row,
+          45,
+          y
+        );
+
+      }
+    );
+
+
+  }
+  else{
+
+    rows.forEach(
+      (row,i)=>{
+
+        if(row==="")
+          return;
+
+
+        const y =
+        120+i*52;
+
+
+        ctx.fillStyle=
+        "rgba(255,255,255,.025)";
+
+
+        ctx.fillRect(
+          25,
+          y-30,
+          850,
+          40
+        );
+
+
+        ctx.fillStyle =
+        i===0
+        ? "#ffffff"
+        : "#b9bec3";
+
+
+        ctx.font=
+        i===0
+        ? "bold 21px Arial"
+        : "20px Arial";
+
+
+        ctx.fillText(
+          row,
+          42,
+          y
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =================================================
+     BOTTOM F1 LINE
+  ================================================= */
+
+  ctx.fillStyle=accent;
+
+  ctx.fillRect(
+    35,
+    490,
+    120,
+    3
   );
 
 
-  return new THREE.CanvasTexture(
+  ctx.fillStyle=
+  "rgba(255,255,255,.28)";
+
+  ctx.font=
+  "12px Arial";
+
+  ctx.fillText(
+    "F1 IMMERSIVE",
+    170,
+    495
+  );
+
+
+  const tex =
+  new THREE.CanvasTexture(
     canvas
   );
 
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  return tex;
+
 }
-
-
 /* =====================================================
    PANELEN
 ===================================================== */
