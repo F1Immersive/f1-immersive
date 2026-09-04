@@ -1,10 +1,12 @@
 <!doctype html>
 <html lang="nl">
+
 <head>
+
 <meta charset="utf-8">
 
 <meta name="viewport"
-      content="width=device-width,initial-scale=1,viewport-fit=cover">
+content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <title>F1 Immersive</title>
 
@@ -148,15 +150,12 @@ canvas{
 }
 
 </style>
+
 </head>
 
 
 <body>
 
-
-<!-- =====================================================
-     START MENU
-===================================================== -->
 
 <div id="menu">
 
@@ -296,11 +295,6 @@ const world =
 new THREE.Group();
 
 
-/*
-   DIT IS DE WERKENDE BASISLAYOUT.
-   NIET AANPASSEN.
-*/
-
 let worldHeight = 0.78;
 
 
@@ -318,7 +312,7 @@ scene.add(world);
 
 
 /* =====================================================
-   TRACK GROUP
+   TRACK
 ===================================================== */
 
 const trackWorld =
@@ -330,10 +324,6 @@ trackWorld.scale.setScalar(.55);
 
 world.add(trackWorld);
 
-
-/* =====================================================
-   BAAN BASIS
-===================================================== */
 
 const base =
 new THREE.Mesh(
@@ -361,10 +351,6 @@ base.position.y=-.17;
 trackWorld.add(base);
 
 
-/* =====================================================
-   GROEN PLATFORM
-===================================================== */
-
 const grass =
 new THREE.Mesh(
 
@@ -390,10 +376,6 @@ grass.position.y=-.08;
 
 trackWorld.add(grass);
 
-
-/* =====================================================
-   RODE RAND
-===================================================== */
 
 const redBase =
 new THREE.Mesh(
@@ -465,10 +447,6 @@ new THREE.CatmullRomCurve3(
   true
 );
 
-
-/* =====================================================
-   ASFALT
-===================================================== */
 
 const road =
 new THREE.Mesh(
@@ -875,98 +853,11 @@ function texture(
 
 
 /* =====================================================
-   GROOT F1 TV SCHERM
+   PANEL
 ===================================================== */
 
-/*
-   BELANGRIJK:
+const panelObjects=[];
 
-   Dit scherm blijft bewust leeg.
-
-   Hier komt uiteindelijk de echte F1 TV-weergave.
-*/
-
-const mainScreenGeometry =
-new THREE.PlaneGeometry(
-  3.65,
-  1.90
-);
-
-
-const mainScreenMaterial =
-new THREE.MeshBasicMaterial({
-
-  color:0x050505,
-
-  side:THREE.DoubleSide
-
-});
-
-
-const mainScreen =
-new THREE.Mesh(
-
-  mainScreenGeometry,
-
-  mainScreenMaterial
-
-);
-
-
-mainScreen.position.set(
-  0,
-  1.45,
-  -1.05
-);
-
-
-world.add(mainScreen);
-
-
-/* =====================================================
-   F1 TV SCHERMRAND
-===================================================== */
-
-const mainBorder =
-new THREE.Mesh(
-
-  new THREE.PlaneGeometry(
-    3.72,
-    1.97
-  ),
-
-  new THREE.MeshBasicMaterial({
-
-    color:0x181a1d,
-
-    side:THREE.DoubleSide
-
-  })
-
-);
-
-
-mainBorder.position.set(
-  0,
-  1.45,
-  -1.055
-);
-
-
-world.add(mainBorder);
-
-
-/*
-   Plaats het zwarte scherm weer iets voor
-   de rand zodat de rand zichtbaar blijft.
-*/
-
-mainScreen.position.z=-1.065;
-
-
-/* =====================================================
-   PANEL FUNCTIE VOOR TIMING / MULTIVIEW
-===================================================== */
 
 function panel(
   title,
@@ -1014,9 +905,7 @@ function panel(
 
 
   group.position.set(
-    position[0],
-    position[1],
-    position[2]
+    ...position
   );
 
 
@@ -1027,9 +916,37 @@ function panel(
   world.add(group);
 
 
+  panelObjects.push(group);
+
+
   return group;
 
 }
+
+
+/* =====================================================
+   HOOFDSCHERM
+===================================================== */
+
+/*
+   Het grote scherm blijft bewust leeg.
+   Dit is de F1 TV display-surface.
+*/
+
+const mainPanel =
+panel(
+
+  "F1 TV",
+
+  [],
+
+  3.65,
+
+  1.90,
+
+  [0,1.45,-1.05]
+
+);
 
 
 /* =====================================================
@@ -1107,15 +1024,19 @@ panel(
 
 
 /* =====================================================
-   VR KNOPPEN
+   INTERACTIEVE OBJECTEN
 ===================================================== */
 
 const interactiveObjects=[];
 
 
+/* =====================================================
+   TEXTURE VOOR KNOP
+===================================================== */
+
 function createTextTexture(
   text,
-  size=48
+  fontSize=44
 ){
 
   const canvas =
@@ -1124,8 +1045,8 @@ function createTextTexture(
   );
 
 
-  canvas.width=512;
-  canvas.height=128;
+  canvas.width=600;
+  canvas.height=140;
 
 
   const ctx =
@@ -1135,8 +1056,8 @@ function createTextTexture(
   ctx.clearRect(
     0,
     0,
-    canvas.width,
-    canvas.height
+    600,
+    140
   );
 
 
@@ -1144,10 +1065,10 @@ function createTextTexture(
 
 
   ctx.font=
-  "bold "+size+"px Arial";
+  `bold ${fontSize}px Arial`;
 
 
-  ctx.textAlign="center";
+  ctx.textAlign="left";
 
 
   ctx.textBaseline="middle";
@@ -1155,25 +1076,21 @@ function createTextTexture(
 
   ctx.fillText(
     text,
-    canvas.width/2,
-    canvas.height/2
+    15,
+    70
   );
 
 
-  const t =
-  new THREE.CanvasTexture(
+  return new THREE.CanvasTexture(
     canvas
   );
 
-
-  t.colorSpace =
-  THREE.SRGBColorSpace;
-
-
-  return t;
-
 }
 
+
+/* =====================================================
+   VR BUTTON
+===================================================== */
 
 function vrButton(
   icon,
@@ -1187,54 +1104,46 @@ function vrButton(
 
 
   group.position.set(
-    position[0],
-    position[1],
-    position[2]
+    ...position
   );
 
 
-  /* knop */
-
-  const button =
+  const background =
   new THREE.Mesh(
 
     new THREE.CircleGeometry(
-      .16,
+      .105,
       32
     ),
 
     new THREE.MeshBasicMaterial({
 
-      color:0x202326,
+      color:0x101214,
 
       transparent:true,
 
-      opacity:.96
+      opacity:.97
 
     })
 
   );
 
 
-  group.add(button);
+  group.add(background);
 
-
-  /* rode ring */
 
   const ring =
   new THREE.Mesh(
 
     new THREE.RingGeometry(
-      .16,
-      .175,
+      .105,
+      .118,
       32
     ),
 
     new THREE.MeshBasicMaterial({
 
-      color:0x4d5155,
-
-      side:THREE.DoubleSide
+      color:0x4d5155
 
     })
 
@@ -1244,22 +1153,60 @@ function vrButton(
   group.add(ring);
 
 
-  /* icoon */
-
-  const iconTexture =
-  createTextTexture(
-    icon,
-    52
+  const iconCanvas =
+  document.createElement(
+    "canvas"
   );
 
 
-  const iconSprite =
+  iconCanvas.width=256;
+  iconCanvas.height=256;
+
+
+  const iconCtx =
+  iconCanvas.getContext("2d");
+
+
+  iconCtx.clearRect(
+    0,
+    0,
+    256,
+    256
+  );
+
+
+  iconCtx.fillStyle="#ffffff";
+
+
+  iconCtx.font=
+  "bold 82px Arial";
+
+
+  iconCtx.textAlign="center";
+
+
+  iconCtx.textBaseline="middle";
+
+
+  iconCtx.fillText(
+    icon,
+    128,
+    128
+  );
+
+
+  const iconTexture =
+  new THREE.CanvasTexture(
+    iconCanvas
+  );
+
+
+  const sprite =
   new THREE.Sprite(
 
     new THREE.SpriteMaterial({
 
-      map:
-      iconTexture,
+      map:iconTexture,
 
       transparent:true
 
@@ -1268,20 +1215,18 @@ function vrButton(
   );
 
 
-  iconSprite.scale.set(
+  sprite.scale.set(
     .12,
     .12,
     .12
   );
 
 
-  iconSprite.position.z=-.02;
+  sprite.position.z=-.02;
 
 
-  group.add(iconSprite);
+  group.add(sprite);
 
-
-  /* label */
 
   const labelTexture =
   createTextTexture(
@@ -1295,8 +1240,7 @@ function vrButton(
 
     new THREE.SpriteMaterial({
 
-      map:
-      labelTexture,
+      map:labelTexture,
 
       transparent:true
 
@@ -1321,8 +1265,6 @@ function vrButton(
 
   group.add(labelSprite);
 
-
-  /* onzichtbaar raakvlak */
 
   const hit =
   new THREE.Mesh(
@@ -1574,7 +1516,7 @@ function selectController(
 
     case "multi":
 
-      openMultiView();
+      toggleMultiView();
 
       break;
 
@@ -1658,21 +1600,26 @@ function highlightController(
 
 
 /* =====================================================
-   F1 TV
+   F1 TV MODE
 ===================================================== */
 
 let f1TVWindow=null;
 
-let multiViewWindow=null;
+let f1TVMode=false;
 
 
 function openF1TV(){
 
+  f1TVMode=true;
+
+
   /*
-     De echte F1 TV-site wordt geopend.
-     
-     We zetten GEEN nep-content op het grote scherm.
+     Het grote scherm blijft de vaste F1 TV-surface.
+     De echte F1 TV-site wordt geopend in Quest.
   */
+
+  mainPanel.visible=true;
+
 
   if(
     f1TVWindow &&
@@ -1711,6 +1658,9 @@ function openF1TV(){
    MULTIVIEW
 ===================================================== */
 
+let multiViewWindow=null;
+
+
 function openMultiView(){
 
   if(
@@ -1740,6 +1690,30 @@ function openMultiView(){
     console.warn(
       "Multiview venster kon niet worden geopend."
     );
+
+  }
+
+}
+
+
+function toggleMultiView(){
+
+  multiVisible=
+  !multiVisible;
+
+
+  multiPanel.visible=
+  multiVisible;
+
+
+  /*
+     Wanneer Multiview wordt aangezet,
+     openen we ook F1 TV.
+  */
+
+  if(multiVisible){
+
+    openMultiView();
 
   }
 
@@ -1776,6 +1750,9 @@ function closeF1Windows(){
 
   multiViewWindow=null;
 
+
+  f1TVMode=false;
+
 }
 
 
@@ -1794,25 +1771,6 @@ function toggleTiming(){
 
   timingPanel.visible=
   timingVisible;
-
-}
-
-
-/* =====================================================
-   MULTIVIEW
-===================================================== */
-
-let multiVisible=true;
-
-
-function toggleMultiView(){
-
-  multiVisible=
-  !multiVisible;
-
-
-  multiPanel.visible=
-  multiVisible;
 
 }
 
@@ -1842,7 +1800,7 @@ function updateCars(){
       );
 
 
-      const tangent =
+      const tangent=
       track.getTangentAt(
         car.t
       );
