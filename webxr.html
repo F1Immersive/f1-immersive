@@ -9,8 +9,7 @@
 
 <style>
 
-html,
-body{
+html,body{
   margin:0;
   width:100%;
   height:100%;
@@ -67,9 +66,7 @@ body{
   margin:0 auto 18px;
   background:#e10600;
   border-radius:5px;
-
-  box-shadow:
-    0 0 18px rgba(225,6,0,.45);
+  box-shadow:0 0 18px rgba(225,6,0,.45);
 }
 
 .card h1{
@@ -98,7 +95,6 @@ button{
   font-size:14px;
   font-weight:700;
   letter-spacing:.5px;
-
   cursor:pointer;
 }
 
@@ -110,12 +106,6 @@ button.secondary{
   margin-top:15px;
   color:#92979c;
   font-size:12px;
-}
-
-.f1tv-active{
-  box-shadow:
-    0 0 0 2px #e10600,
-    0 0 28px rgba(225,6,0,.35);
 }
 
 canvas{
@@ -207,7 +197,6 @@ new THREE.WebGLRenderer({
   document.getElementById("c"),
 
   antialias:true,
-
   alpha:true
 
 });
@@ -217,15 +206,12 @@ renderer.setPixelRatio(
   Math.min(devicePixelRatio,2)
 );
 
-
 renderer.setSize(
   innerWidth,
   innerHeight
 );
 
-
 renderer.xr.enabled=true;
-
 
 renderer.outputColorSpace =
 THREE.SRGBColorSpace;
@@ -236,13 +222,11 @@ THREE.SRGBColorSpace;
 ===================================================== */
 
 scene.add(
-
   new THREE.HemisphereLight(
     0xffffff,
     0x202020,
     3
   )
-
 );
 
 
@@ -252,13 +236,11 @@ new THREE.DirectionalLight(
   3
 );
 
-
 light.position.set(
   4,
   8,
   5
 );
-
 
 scene.add(light);
 
@@ -294,15 +276,13 @@ scene.add(world);
 const trackWorld =
 new THREE.Group();
 
-
 trackWorld.scale.setScalar(.55);
-
 
 world.add(trackWorld);
 
 
 /* =====================================================
-   BAAN BASIS
+   BAAN
 ===================================================== */
 
 const base =
@@ -315,25 +295,16 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
-
     color:0x111315,
-
     roughness:.8
-
   })
 
 );
 
-
 base.position.y=-.17;
-
 
 trackWorld.add(base);
 
-
-/* =====================================================
-   GROEN PLATFORM
-===================================================== */
 
 const grass =
 new THREE.Mesh(
@@ -345,25 +316,16 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
-
     color:0x203a25,
-
     roughness:.9
-
   })
 
 );
 
-
 grass.position.y=-.08;
-
 
 trackWorld.add(grass);
 
-
-/* =====================================================
-   RODE RAND
-===================================================== */
 
 const redBase =
 new THREE.Mesh(
@@ -375,16 +337,12 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshBasicMaterial({
-
     color:0xe10600
-
   })
 
 );
 
-
 redBase.position.y=-.245;
-
 
 trackWorld.add(redBase);
 
@@ -408,14 +366,11 @@ const points=[
   [-1.72,.02]
 
 ].map(
-
-  p =>
-  new THREE.Vector3(
+  p=>new THREE.Vector3(
     p[0],
     0,
     p[1]
   )
-
 );
 
 
@@ -442,18 +397,13 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshStandardMaterial({
-
     color:0x25282b,
-
     roughness:.8
-
   })
 
 );
 
-
 road.position.y=.05;
-
 
 trackWorld.add(road);
 
@@ -474,16 +424,12 @@ new THREE.Mesh(
   ),
 
   new THREE.MeshBasicMaterial({
-
     color:0xffffff
-
   })
 
 );
 
-
 line.position.y=.275;
-
 
 trackWorld.add(line);
 
@@ -499,15 +445,10 @@ for(
 ){
 
   const p =
-  track.getPointAt(
-    i/90
-  );
-
+  track.getPointAt(i/90);
 
   const tangent =
-  track.getTangentAt(
-    i/90
-  );
+  track.getTangentAt(i/90);
 
 
   const kerb =
@@ -581,7 +522,6 @@ function createCar(color){
   new THREE.MeshStandardMaterial({
 
     color:color,
-
     roughness:.35
 
   });
@@ -600,7 +540,6 @@ function createCar(color){
 
   );
 
-
   g.add(body);
 
 
@@ -617,9 +556,7 @@ function createCar(color){
 
   );
 
-
   nose.position.z=-.23;
-
 
   g.add(nose);
 
@@ -634,16 +571,12 @@ function createCar(color){
     ),
 
     new THREE.MeshStandardMaterial({
-
       color:0x080808
-
     })
 
   );
 
-
   frontWing.position.z=-.30;
-
 
   g.add(frontWing);
 
@@ -658,16 +591,12 @@ function createCar(color){
     ),
 
     new THREE.MeshStandardMaterial({
-
       color:0x080808
-
     })
 
   );
 
-
   rearWing.position.z=.17;
-
 
   g.add(rearWing);
 
@@ -684,13 +613,9 @@ for(
 ){
 
   const car =
-  createCar(
-    carColors[i]
-  );
-
+  createCar(carColors[i]);
 
   trackWorld.add(car);
-
 
   cars.push({
 
@@ -718,10 +643,7 @@ function texture(
 ){
 
   const canvas =
-  document.createElement(
-    "canvas"
-  );
-
+  document.createElement("canvas");
 
   canvas.width=900;
   canvas.height=520;
@@ -733,44 +655,30 @@ function texture(
 
   ctx.fillStyle="#101214";
 
-
   ctx.fillRect(
-    0,
-    0,
-    900,
-    520
+    0,0,900,520
   );
 
 
   ctx.fillStyle=
   "rgba(255,255,255,.025)";
 
-
   ctx.fillRect(
-    0,
-    0,
-    900,
-    90
+    0,0,900,90
   );
 
 
   ctx.fillStyle=accent;
 
-
   ctx.fillRect(
-    0,
-    0,
-    8,
-    520
+    0,0,8,520
   );
 
 
   ctx.fillStyle="#ffffff";
 
-
   ctx.font=
   "bold 34px Arial";
-
 
   ctx.fillText(
     title,
@@ -782,30 +690,18 @@ function texture(
   ctx.strokeStyle=
   "rgba(255,255,255,.14)";
 
-
   ctx.lineWidth=1;
-
 
   ctx.beginPath();
 
+  ctx.moveTo(35,78);
 
-  ctx.moveTo(
-    35,
-    78
-  );
-
-
-  ctx.lineTo(
-    865,
-    78
-  );
-
+  ctx.lineTo(865,78);
 
   ctx.stroke();
 
 
-  ctx.font=
-  "22px Arial";
+  ctx.font="22px Arial";
 
 
   rows.forEach(
@@ -815,7 +711,6 @@ function texture(
       i===0
       ? "#ffffff"
       : "#b9bec3";
-
 
       ctx.fillText(
         row,
@@ -835,16 +730,14 @@ function texture(
 
 
 /* =====================================================
+   STAP 1
    PREMIUM F1 TV SCHERM
 ===================================================== */
 
 function cleanF1TVTexture(){
 
   const canvas =
-  document.createElement(
-    "canvas"
-  );
-
+  document.createElement("canvas");
 
   canvas.width=1400;
   canvas.height=760;
@@ -854,28 +747,20 @@ function cleanF1TVTexture(){
   canvas.getContext("2d");
 
 
-  /* Diep zwart scherm */
-
   const bg =
   ctx.createLinearGradient(
-    0,
-    0,
-    0,
-    760
+    0,0,0,760
   );
-
 
   bg.addColorStop(
     0,
     "#08090a"
   );
 
-
   bg.addColorStop(
     .45,
     "#030405"
   );
-
 
   bg.addColorStop(
     1,
@@ -885,31 +770,20 @@ function cleanF1TVTexture(){
 
   ctx.fillStyle=bg;
 
-
   ctx.fillRect(
-    0,
-    0,
-    1400,
-    760
+    0,0,1400,760
   );
 
-
-  /* Zeer subtiele bovenste glans */
 
   const shine =
   ctx.createLinearGradient(
-    0,
-    0,
-    0,
-    180
+    0,0,0,180
   );
-
 
   shine.addColorStop(
     0,
     "rgba(255,255,255,.055)"
   );
-
 
   shine.addColorStop(
     1,
@@ -919,43 +793,27 @@ function cleanF1TVTexture(){
 
   ctx.fillStyle=shine;
 
-
   ctx.fillRect(
-    0,
-    0,
-    1400,
-    180
+    0,0,1400,180
   );
 
 
-  /* F1 rode accentlijn */
+  /* rode F1 lijn */
 
   ctx.fillStyle="#e10600";
 
-
   ctx.fillRect(
-    0,
-    0,
-    1400,
-    4
+    0,0,1400,4
   );
 
-
-  /* Subtiele lichtlijn */
 
   ctx.fillStyle=
   "rgba(255,255,255,.035)";
 
-
   ctx.fillRect(
-    0,
-    4,
-    1400,
-    1
+    0,4,1400,1
   );
 
-
-  /* Zachte vignette */
 
   const vignette =
   ctx.createRadialGradient(
@@ -973,7 +831,6 @@ function cleanF1TVTexture(){
     "rgba(0,0,0,0)"
   );
 
-
   vignette.addColorStop(
     1,
     "rgba(0,0,0,.42)"
@@ -982,12 +839,341 @@ function cleanF1TVTexture(){
 
   ctx.fillStyle=vignette;
 
+  ctx.fillRect(
+    0,0,1400,760
+  );
+
+
+  return new THREE.CanvasTexture(
+    canvas
+  );
+
+}
+
+
+/* =====================================================
+   STAP 2
+   NIEUWE LIVE TIMING TEXTURE
+===================================================== */
+
+function timingTexture(){
+
+  const canvas =
+  document.createElement("canvas");
+
+  canvas.width=900;
+  canvas.height=900;
+
+
+  const ctx =
+  canvas.getContext("2d");
+
+
+  /* achtergrond */
+
+  ctx.fillStyle="#090b0d";
 
   ctx.fillRect(
     0,
     0,
-    1400,
-    760
+    900,
+    900
+  );
+
+
+  /* subtiele bovenste achtergrond */
+
+  const gradient =
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    180
+  );
+
+  gradient.addColorStop(
+    0,
+    "#171a1d"
+  );
+
+  gradient.addColorStop(
+    1,
+    "#090b0d"
+  );
+
+
+  ctx.fillStyle=gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    180
+  );
+
+
+  /* rode F1 balk */
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    8
+  );
+
+
+  /* titel */
+
+  ctx.fillStyle="#ffffff";
+
+  ctx.font=
+  "bold 38px Arial";
+
+  ctx.fillText(
+    "LIVE TIMING",
+    34,
+    58
+  );
+
+
+  /* subtitel */
+
+  ctx.fillStyle="#777d82";
+
+  ctx.font=
+  "16px Arial";
+
+  ctx.fillText(
+    "RACE",
+    34,
+    84
+  );
+
+
+  /* header */
+
+  ctx.fillStyle="#555b60";
+
+  ctx.font=
+  "bold 15px Arial";
+
+  ctx.fillText(
+    "POS",
+    34,
+    128
+  );
+
+  ctx.fillText(
+    "DRIVER",
+    125,
+    128
+  );
+
+  ctx.fillText(
+    "GAP",
+    680,
+    128
+  );
+
+
+  ctx.strokeStyle=
+  "rgba(255,255,255,.12)";
+
+  ctx.lineWidth=1;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    28,
+    145
+  );
+
+  ctx.lineTo(
+    872,
+    145
+  );
+
+  ctx.stroke();
+
+
+  const drivers=[
+
+    ["1","VER","+0.000"],
+    ["2","LEC","+2.735"],
+    ["3","NOR","+3.219"],
+    ["4","PIA","+4.669"],
+    ["5","HAM","+5.601"]
+
+  ];
+
+
+  drivers.forEach(
+    (driver,i)=>{
+
+      const y=
+      205+i*100;
+
+
+      /* positie */
+
+      ctx.fillStyle =
+      i===0
+      ? "#e10600"
+      : "#777d82";
+
+
+      ctx.font=
+      "bold 28px Arial";
+
+      ctx.fillText(
+        driver[0],
+        38,
+        y
+      );
+
+
+      /* coureur */
+
+      ctx.fillStyle="#ffffff";
+
+      ctx.font=
+      "bold 26px Arial";
+
+      ctx.fillText(
+        driver[1],
+        125,
+        y
+      );
+
+
+      /* gap */
+
+      ctx.fillStyle="#c1c5c8";
+
+      ctx.font=
+      "22px Arial";
+
+      ctx.textAlign="right";
+
+      ctx.fillText(
+        driver[2],
+        860,
+        y
+      );
+
+      ctx.textAlign="left";
+
+
+      /* scheidingslijn */
+
+      if(i<drivers.length-1){
+
+        ctx.strokeStyle=
+        "rgba(255,255,255,.08)";
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+          34,
+          y+38
+        );
+
+        ctx.lineTo(
+          866,
+          y+38
+        );
+
+        ctx.stroke();
+
+      }
+
+    }
+  );
+
+
+  /* onderste informatie */
+
+  ctx.fillStyle="#24282c";
+
+  ctx.fillRect(
+    28,
+    720,
+    844,
+    105
+  );
+
+
+  ctx.fillStyle="#777d82";
+
+  ctx.font=
+  "15px Arial";
+
+  ctx.fillText(
+    "CURRENT LAP",
+    50,
+    755
+  );
+
+
+  ctx.fillStyle="#ffffff";
+
+  ctx.font=
+  "bold 27px Arial";
+
+  ctx.fillText(
+    "18 / 72",
+    50,
+    795
+  );
+
+
+  ctx.fillStyle="#777d82";
+
+  ctx.font=
+  "15px Arial";
+
+  ctx.fillText(
+    "LEADER",
+    270,
+    755
+  );
+
+
+  ctx.fillStyle="#ffffff";
+
+  ctx.font=
+  "bold 27px Arial";
+
+  ctx.fillText(
+    "VER",
+    270,
+    795
+  );
+
+
+  ctx.fillStyle="#777d82";
+
+  ctx.font=
+  "15px Arial";
+
+  ctx.fillText(
+    "STATUS",
+    500,
+    755
+  );
+
+
+  ctx.fillStyle="#e10600";
+
+  ctx.font=
+  "bold 18px Arial";
+
+  ctx.fillText(
+    "LIVE",
+    500,
+    795
   );
 
 
@@ -1056,6 +1242,33 @@ function panel(
 
   /* scherm */
 
+  let screenTexture;
+
+
+  if(title==="F1 TV"){
+
+    screenTexture =
+    cleanF1TVTexture();
+
+  }
+  else if(title==="LIVE TIMING"){
+
+    screenTexture =
+    timingTexture();
+
+  }
+  else{
+
+    screenTexture =
+    texture(
+      title,
+      rows,
+      accent
+    );
+
+  }
+
+
   const screen =
   new THREE.Mesh(
 
@@ -1066,17 +1279,7 @@ function panel(
 
     new THREE.MeshBasicMaterial({
 
-      map:
-
-      title==="F1 TV"
-
-      ? cleanF1TVTexture()
-
-      : texture(
-          title,
-          rows,
-          accent
-        )
+      map:screenTexture
 
     })
 
@@ -1090,7 +1293,6 @@ function panel(
 
 
   world.add(group);
-
 
   panelObjects.push(group);
 
@@ -1112,7 +1314,6 @@ panel(
   [],
 
   3.65,
-
   1.90,
 
   [0,1.45,-1.05]
@@ -1129,20 +1330,9 @@ panel(
 
   "LIVE TIMING",
 
-  [
-
-    "P1  VER   +0.000",
-    "P2  LEC   +2.735",
-    "P3  NOR   +3.219",
-    "P4  PIA   +4.669",
-    "P5  HAM   +5.601",
-    "",
-    "LAP 18 / 72"
-
-  ],
+  [],
 
   1.20,
-
   1.25,
 
   [2.60,1.45,-.80],
@@ -1173,7 +1363,6 @@ panel(
   ],
 
   1.20,
-
   1.08,
 
   [2.60,.10,-.80],
@@ -1200,10 +1389,7 @@ function createTextTexture(
 ){
 
   const canvas =
-  document.createElement(
-    "canvas"
-  );
-
+  document.createElement("canvas");
 
   canvas.width=600;
   canvas.height=140;
@@ -1214,22 +1400,16 @@ function createTextTexture(
 
 
   ctx.clearRect(
-    0,
-    0,
-    600,
-    140
+    0,0,600,140
   );
 
 
   ctx.fillStyle="#ffffff";
 
-
   ctx.font=
   `bold ${fontSize}px Arial`;
 
-
   ctx.textAlign="left";
-
 
   ctx.textBaseline="middle";
 
@@ -1288,7 +1468,6 @@ function vrButton(
 
   );
 
-
   group.add(background);
 
 
@@ -1309,15 +1488,11 @@ function vrButton(
 
   );
 
-
   group.add(ring);
 
 
   const iconCanvas =
-  document.createElement(
-    "canvas"
-  );
-
+  document.createElement("canvas");
 
   iconCanvas.width=256;
   iconCanvas.height=256;
@@ -1328,22 +1503,16 @@ function vrButton(
 
 
   iconCtx.clearRect(
-    0,
-    0,
-    256,
-    256
+    0,0,256,256
   );
 
 
   iconCtx.fillStyle="#ffffff";
 
-
   iconCtx.font=
   "bold 82px Arial";
 
-
   iconCtx.textAlign="center";
-
 
   iconCtx.textBaseline="middle";
 
@@ -1437,7 +1606,6 @@ function vrButton(
     new THREE.MeshBasicMaterial({
 
       transparent:true,
-
       opacity:0
 
     })
@@ -1448,10 +1616,8 @@ function vrButton(
   hit.userData.action=
   action;
 
-
   hit.userData.label=
   label;
-
 
   hit.userData.group=
   group;
@@ -1459,9 +1625,7 @@ function vrButton(
 
   group.add(hit);
 
-
   interactiveObjects.push(hit);
-
 
   world.add(group);
 
@@ -1523,14 +1687,10 @@ new THREE.Matrix4();
    CONTROLLERS
 ===================================================== */
 
-function setupController(
-  index
-){
+function setupController(index){
 
   const controller =
-  renderer.xr.getController(
-    index
-  );
+  renderer.xr.getController(index);
 
 
   scene.add(controller);
@@ -1541,15 +1701,11 @@ function setupController(
   .setFromPoints([
 
     new THREE.Vector3(
-      0,
-      0,
-      0
+      0,0,0
     ),
 
     new THREE.Vector3(
-      0,
-      0,
-      -3
+      0,0,-3
     )
 
   ]);
@@ -1579,11 +1735,9 @@ function setupController(
   controller.addEventListener(
     "selectstart",
     ()=>{
-
       selectController(
         controller
       );
-
     }
   );
 
@@ -1596,7 +1750,6 @@ function setupController(
 const controllers=[
 
   setupController(0),
-
   setupController(1)
 
 ];
@@ -1612,7 +1765,6 @@ function getControllerHits(
 
   tempMatrix.identity();
 
-
   tempMatrix.extractRotation(
     controller.matrixWorld
   );
@@ -1626,9 +1778,7 @@ function getControllerHits(
 
   raycaster.ray.direction
   .set(
-    0,
-    0,
-    -1
+    0,0,-1
   )
   .applyMatrix4(
     tempMatrix
@@ -1676,7 +1826,6 @@ function selectController(
 
     case "multi":
 
-      toggleMultiView();
       openMultiView();
 
       break;
@@ -1720,7 +1869,6 @@ function highlightController(
       const group =
       object.userData.group;
 
-
       const ring =
       group.children[1];
 
@@ -1741,7 +1889,6 @@ function highlightController(
 
     const group =
     hits[0].object.userData.group;
-
 
     const ring =
     group.children[1];
@@ -1776,7 +1923,7 @@ function setF1TVMode(active){
   f1TVMode=active;
 
 
-  const frame=
+  const frame =
   mainPanel.children[0];
 
 
@@ -1810,7 +1957,7 @@ function openF1TV(){
   }
 
 
-  f1TVWindow=
+  f1TVWindow =
   window.open(
 
     "https://f1tv.formula1.com/",
@@ -1963,26 +2110,22 @@ function updateCars(){
       }
 
 
-      const p=
+      const p =
       track.getPointAt(
         car.t
       );
 
 
-      const tangent=
+      const tangent =
       track.getTangentAt(
         car.t
       );
 
 
       car.mesh.position.set(
-
         p.x,
-
         .32,
-
         p.z
-
       );
 
 
