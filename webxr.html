@@ -1,12 +1,9 @@
 <!doctype html>
 <html lang="nl">
-
 <head>
-
 <meta charset="utf-8">
-
 <meta name="viewport"
-content="width=device-width,initial-scale=1,viewport-fit=cover">
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <title>F1 Immersive</title>
 
@@ -18,14 +15,9 @@ body{
   width:100%;
   height:100%;
   overflow:hidden;
-
   background:#000;
   color:#fff;
-
-  font-family:
-    Arial,
-    Helvetica,
-    sans-serif;
+  font-family:Arial,Helvetica,sans-serif;
 }
 
 body{
@@ -36,7 +28,6 @@ body{
   position:fixed;
   inset:0;
   z-index:20;
-
   display:flex;
   align-items:center;
   justify-content:center;
@@ -52,9 +43,7 @@ body{
 
 .card{
   width:min(86vw,440px);
-
   padding:34px;
-
   text-align:center;
 
   background:
@@ -65,7 +54,6 @@ body{
     );
 
   border:1px solid rgba(255,255,255,.12);
-
   border-radius:26px;
 
   box-shadow:
@@ -76,11 +64,8 @@ body{
 .logoLine{
   width:52px;
   height:4px;
-
   margin:0 auto 18px;
-
   background:#e10600;
-
   border-radius:5px;
 
   box-shadow:
@@ -89,39 +74,29 @@ body{
 
 .card h1{
   margin:0 0 8px;
-
   font-size:36px;
   font-weight:800;
-
   letter-spacing:4px;
 }
 
 .card p{
   margin:0 0 26px;
-
   color:#9da2a7;
-
   font-size:14px;
   line-height:1.6;
 }
 
 button{
   border:1px solid rgba(255,255,255,.14);
-
   border-radius:13px;
-
   padding:14px 22px;
-
   margin:5px;
 
   background:#e10600;
-
   color:#fff;
 
   font-size:14px;
-
   font-weight:700;
-
   letter-spacing:.5px;
 
   cursor:pointer;
@@ -133,24 +108,25 @@ button.secondary{
 
 #status{
   margin-top:15px;
-
   color:#92979c;
-
   font-size:12px;
+}
+
+.f1tv-active{
+  box-shadow:
+    0 0 0 2px #e10600,
+    0 0 28px rgba(225,6,0,.35);
 }
 
 canvas{
   position:fixed;
   inset:0;
-
   width:100%;
   height:100%;
-
   display:block;
 }
 
 </style>
-
 </head>
 
 
@@ -295,7 +271,7 @@ const world =
 new THREE.Group();
 
 
-let worldHeight = 0.78;
+let worldHeight=0.78;
 
 
 world.position.set(
@@ -312,7 +288,7 @@ scene.add(world);
 
 
 /* =====================================================
-   TRACK
+   TRACK GROUP
 ===================================================== */
 
 const trackWorld =
@@ -324,6 +300,10 @@ trackWorld.scale.setScalar(.55);
 
 world.add(trackWorld);
 
+
+/* =====================================================
+   BAAN BASIS
+===================================================== */
 
 const base =
 new THREE.Mesh(
@@ -351,6 +331,10 @@ base.position.y=-.17;
 trackWorld.add(base);
 
 
+/* =====================================================
+   GROEN PLATFORM
+===================================================== */
+
 const grass =
 new THREE.Mesh(
 
@@ -376,6 +360,10 @@ grass.position.y=-.08;
 
 trackWorld.add(grass);
 
+
+/* =====================================================
+   RODE RAND
+===================================================== */
 
 const redBase =
 new THREE.Mesh(
@@ -408,25 +396,15 @@ trackWorld.add(redBase);
 const points=[
 
   [-1.65,-.45],
-
   [-1.25,-.88],
-
   [-.35,-.98],
-
   [.65,-.85],
-
   [1.45,-.45],
-
   [1.62,.10],
-
   [1.28,.65],
-
   [.45,.78],
-
   [-.45,.72],
-
   [-1.48,.50],
-
   [-1.72,.02]
 
 ].map(
@@ -447,6 +425,10 @@ new THREE.CatmullRomCurve3(
   true
 );
 
+
+/* =====================================================
+   ASFALT
+===================================================== */
 
 const road =
 new THREE.Mesh(
@@ -726,7 +708,7 @@ for(
 
 
 /* =====================================================
-   PANEL TEXTURE
+   NORMALE PANEL TEXTURE
 ===================================================== */
 
 function texture(
@@ -853,7 +835,171 @@ function texture(
 
 
 /* =====================================================
-   PANEL
+   PREMIUM F1 TV SCHERM
+===================================================== */
+
+function cleanF1TVTexture(){
+
+  const canvas =
+  document.createElement(
+    "canvas"
+  );
+
+
+  canvas.width=1400;
+  canvas.height=760;
+
+
+  const ctx =
+  canvas.getContext("2d");
+
+
+  /* Diep zwart scherm */
+
+  const bg =
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    760
+  );
+
+
+  bg.addColorStop(
+    0,
+    "#08090a"
+  );
+
+
+  bg.addColorStop(
+    .45,
+    "#030405"
+  );
+
+
+  bg.addColorStop(
+    1,
+    "#000000"
+  );
+
+
+  ctx.fillStyle=bg;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    760
+  );
+
+
+  /* Zeer subtiele bovenste glans */
+
+  const shine =
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    180
+  );
+
+
+  shine.addColorStop(
+    0,
+    "rgba(255,255,255,.055)"
+  );
+
+
+  shine.addColorStop(
+    1,
+    "rgba(255,255,255,0)"
+  );
+
+
+  ctx.fillStyle=shine;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    180
+  );
+
+
+  /* F1 rode accentlijn */
+
+  ctx.fillStyle="#e10600";
+
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    4
+  );
+
+
+  /* Subtiele lichtlijn */
+
+  ctx.fillStyle=
+  "rgba(255,255,255,.035)";
+
+
+  ctx.fillRect(
+    0,
+    4,
+    1400,
+    1
+  );
+
+
+  /* Zachte vignette */
+
+  const vignette =
+  ctx.createRadialGradient(
+    700,
+    380,
+    180,
+    700,
+    380,
+    850
+  );
+
+
+  vignette.addColorStop(
+    0,
+    "rgba(0,0,0,0)"
+  );
+
+
+  vignette.addColorStop(
+    1,
+    "rgba(0,0,0,.42)"
+  );
+
+
+  ctx.fillStyle=vignette;
+
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    760
+  );
+
+
+  return new THREE.CanvasTexture(
+    canvas
+  );
+
+}
+
+
+/* =====================================================
+   PANELEN
 ===================================================== */
 
 const panelObjects=[];
@@ -865,43 +1011,12 @@ function panel(
   width,
   height,
   position,
-  rotationY=0
+  rotation=0,
+  accent="#e10600"
 ){
 
   const group =
   new THREE.Group();
-
-
-  const geometry =
-  new THREE.PlaneGeometry(
-    width,
-    height
-  );
-
-
-  const material =
-  new THREE.MeshBasicMaterial({
-
-    map:
-    texture(
-      title,
-      rows
-    ),
-
-    side:
-    THREE.DoubleSide
-
-  });
-
-
-  const mesh =
-  new THREE.Mesh(
-    geometry,
-    material
-  );
-
-
-  group.add(mesh);
 
 
   group.position.set(
@@ -910,7 +1025,68 @@ function panel(
 
 
   group.rotation.y=
-  rotationY;
+  rotation;
+
+
+  /* frame */
+
+  const frame =
+  new THREE.Mesh(
+
+    new THREE.PlaneGeometry(
+      width+.045,
+      height+.045
+    ),
+
+    new THREE.MeshBasicMaterial({
+
+      color:0x3b3f43,
+
+      transparent:true,
+
+      opacity:.92
+
+    })
+
+  );
+
+
+  group.add(frame);
+
+
+  /* scherm */
+
+  const screen =
+  new THREE.Mesh(
+
+    new THREE.PlaneGeometry(
+      width,
+      height
+    ),
+
+    new THREE.MeshBasicMaterial({
+
+      map:
+
+      title==="F1 TV"
+
+      ? cleanF1TVTexture()
+
+      : texture(
+          title,
+          rows,
+          accent
+        )
+
+    })
+
+  );
+
+
+  screen.position.z=-.03;
+
+
+  group.add(screen);
 
 
   world.add(group);
@@ -927,11 +1103,6 @@ function panel(
 /* =====================================================
    HOOFDSCHERM
 ===================================================== */
-
-/*
-   Het grote scherm blijft bewust leeg.
-   Dit is de F1 TV display-surface.
-*/
 
 const mainPanel =
 panel(
@@ -961,17 +1132,11 @@ panel(
   [
 
     "P1  VER   +0.000",
-
     "P2  LEC   +2.735",
-
     "P3  NOR   +3.219",
-
     "P4  PIA   +4.669",
-
     "P5  HAM   +5.601",
-
     "",
-
     "LAP 18 / 72"
 
   ],
@@ -999,15 +1164,10 @@ panel(
   [
 
     "MAIN FEED",
-
     "ONBOARD",
-
     "TRACK CAMERA",
-
     "DRIVER CAMERA",
-
     "",
-
     "SELECT MULTIVIEW"
 
   ],
@@ -1517,6 +1677,7 @@ function selectController(
     case "multi":
 
       toggleMultiView();
+      openMultiView();
 
       break;
 
@@ -1600,25 +1761,41 @@ function highlightController(
 
 
 /* =====================================================
-   F1 TV MODE
+   F1 TV
 ===================================================== */
+
+let f1TVMode=false;
 
 let f1TVWindow=null;
 
-let f1TVMode=false;
+let multiViewWindow=null;
+
+
+function setF1TVMode(active){
+
+  f1TVMode=active;
+
+
+  const frame=
+  mainPanel.children[0];
+
+
+  if(frame){
+
+    frame.material.color.set(
+      active
+      ? 0xe10600
+      : 0x3b3f43
+    );
+
+  }
+
+}
 
 
 function openF1TV(){
 
-  f1TVMode=true;
-
-
-  /*
-     Het grote scherm blijft de vaste F1 TV-surface.
-     De echte F1 TV-site wordt geopend in Quest.
-  */
-
-  mainPanel.visible=true;
+  setF1TVMode(true);
 
 
   if(
@@ -1633,7 +1810,7 @@ function openF1TV(){
   }
 
 
-  f1TVWindow =
+  f1TVWindow=
   window.open(
 
     "https://f1tv.formula1.com/",
@@ -1657,9 +1834,6 @@ function openF1TV(){
 /* =====================================================
    MULTIVIEW
 ===================================================== */
-
-let multiViewWindow=null;
-
 
 function openMultiView(){
 
@@ -1696,35 +1870,14 @@ function openMultiView(){
 }
 
 
-function toggleMultiView(){
-
-  multiVisible=
-  !multiVisible;
-
-
-  multiPanel.visible=
-  multiVisible;
-
-
-  /*
-     Wanneer Multiview wordt aangezet,
-     openen we ook F1 TV.
-  */
-
-  if(multiVisible){
-
-    openMultiView();
-
-  }
-
-}
-
-
 /* =====================================================
    CLOSE
 ===================================================== */
 
 function closeF1Windows(){
+
+  setF1TVMode(false);
+
 
   if(
     f1TVWindow &&
@@ -1750,9 +1903,6 @@ function closeF1Windows(){
 
   multiViewWindow=null;
 
-
-  f1TVMode=false;
-
 }
 
 
@@ -1771,6 +1921,25 @@ function toggleTiming(){
 
   timingPanel.visible=
   timingVisible;
+
+}
+
+
+/* =====================================================
+   MULTIVIEW
+===================================================== */
+
+let multiVisible=true;
+
+
+function toggleMultiView(){
+
+  multiVisible=
+  !multiVisible;
+
+
+  multiPanel.visible=
+  multiVisible;
 
 }
 
@@ -2004,7 +2173,6 @@ async()=>{
         );
 
       }
-
     );
 
   }
