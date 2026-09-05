@@ -1,926 +1,2779 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>F1 Immersive</title>
 
 <style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+body{touch-action:none}
 
-* {
-    box-sizing: border-box;
+#menu{
+  position:fixed;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(circle at 50% 35%,#25282c 0%,#0b0c0e 58%,#000 100%);
 }
 
-html, body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background: #050505;
-    color: white;
-    font-family: Arial, Helvetica, sans-serif;
+.card{
+  width:min(86vw,440px);
+  padding:34px;
+  text-align:center;
+  background:linear-gradient(145deg,rgba(25,27,30,.96),rgba(8,9,10,.96));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:26px;
+  box-shadow:0 25px 90px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.04);
 }
 
-#menu {
-    position: fixed;
-    inset: 0;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #292929 0%,
-            #090909 65%,
-            #000000 100%
-        );
-
-    z-index: 100;
+.logoLine{
+  width:52px;
+  height:4px;
+  margin:0 auto 18px;
+  background:#e10600;
+  border-radius:5px;
+  box-shadow:0 0 18px rgba(225,6,0,.45);
 }
 
-.panel {
-
-    width: min(90%, 500px);
-
-    padding: 35px;
-
-    text-align: center;
-
-    border-radius: 24px;
-
-    background: rgba(20,20,20,.92);
-
-    border: 1px solid #555;
-
-    box-shadow:
-        0 20px 80px rgba(0,0,0,.8);
+.card h1{
+  margin:0 0 8px;
+  font-size:36px;
+  font-weight:800;
+  letter-spacing:4px;
 }
 
-.logo {
-    font-size: 46px;
-    font-weight: 900;
-    margin-bottom: 10px;
+.card p{
+  margin:0 0 26px;
+  color:#9da2a7;
+  font-size:14px;
+  line-height:1.6;
 }
 
-.subtitle {
-    color: #aaa;
-    margin-bottom: 30px;
+button{
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:13px;
+  padding:14px 22px;
+  margin:5px;
+  background:#e10600;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:.5px;
+  cursor:pointer;
 }
 
-button {
+button.secondary{background:#202326}
 
-    display: inline-block;
-
-    border: none;
-
-    border-radius: 12px;
-
-    padding: 16px 25px;
-
-    margin: 6px;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    color: white;
-
-    background: #e10600;
-
-    cursor: pointer;
-
-    -webkit-tap-highlight-color: transparent;
+#status{
+  margin-top:15px;
+  color:#92979c;
+  font-size:12px;
 }
 
-button.secondary {
-    background: #333;
+.f1tv-active{
+  box-shadow:0 0 0 2px #e10600,0 0 28px rgba(225,6,0,.35);
 }
 
-button:active {
-    transform: scale(.96);
+canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
 }
-
-#experience {
-
-    position: fixed;
-
-    inset: 0;
-
-    display: none;
-}
-
-canvas {
-
-    width: 100%;
-    height: 100%;
-
-    display: block;
-}
-
-#hud {
-
-    position: fixed;
-
-    top: 20px;
-    left: 20px;
-
-    padding: 14px 18px;
-
-    background: rgba(0,0,0,.75);
-
-    border-radius: 12px;
-
-    border: 1px solid #444;
-
-    display: none;
-
-    z-index: 20;
-}
-
-#hud strong {
-    font-size: 17px;
-}
-
-#hud small {
-    display: block;
-    color: #aaa;
-    margin-top: 4px;
-}
-
-#f1tv {
-
-    position: fixed;
-
-    top: 20px;
-    right: 20px;
-
-    display: none;
-
-    z-index: 20;
-
-    background: #e10600;
-}
-
-#message {
-
-    margin-top: 15px;
-
-    color: #8f8;
-
-    font-size: 14px;
-}
-
 </style>
-
 </head>
 
 <body>
 
-<!-- START MENU -->
-
 <div id="menu">
+  <div class="card">
+    <div class="logoLine"></div>
 
-    <div class="panel">
+    <h1>F1 IMMERSIVE</h1>
 
-        <div class="logo">
-            🏁 F1 IMMERSIVE
-        </div>
+    <p>
+      Spatial Formula 1<br>
+      Designed for Meta Quest 3
+    </p>
 
-        <div class="subtitle">
-            Formula 1 • 3D Race Experience
-        </div>
+    <button id="start">
+      START IMMERSIVE
+    </button>
 
-        <button id="startButton">
-            START IMMERSIVE
-        </button>
+    <button class="secondary" id="tv">
+      F1 TV
+    </button>
 
-        <button id="tvButton" class="secondary">
-            OPEN F1 TV
-        </button>
+    <button class="secondary" id="multi">
+      MULTIVIEW
+    </button>
 
-        <div id="message"></div>
-
+    <div id="status">
+      WebXR controleren...
     </div>
-
+  </div>
 </div>
 
+<canvas id="c"></canvas>
 
-<!-- EXPERIENCE -->
+<script type="module">
 
-<div id="experience">
-
-    <canvas id="canvas"></canvas>
-
-</div>
+import * as THREE from
+"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
 
 
-<div id="hud">
+/* =====================================================
+   BASIS
+===================================================== */
 
-    <strong>🏁 F1 IMMERSIVE</strong>
+const menu=document.getElementById("menu");
+const status=document.getElementById("status");
 
-    <small>
-        Meta Quest 3 • 3D Track
-    </small>
+const scene=new THREE.Scene();
 
-</div>
-
-
-<button id="f1tv">
-    F1 TV
-</button>
-
-
-<script>
-
-/*
-==========================================================
-F1 IMMERSIVE
-Simple browser version
-Works on iPhone / Safari / Quest Browser
-==========================================================
-*/
-
-
-const menu =
-    document.getElementById("menu");
-
-const experience =
-    document.getElementById("experience");
-
-const canvas =
-    document.getElementById("canvas");
-
-const ctx =
-    canvas.getContext("2d");
-
-const startButton =
-    document.getElementById("startButton");
-
-const tvButton =
-    document.getElementById("tvButton");
-
-const f1tv =
-    document.getElementById("f1tv");
-
-const hud =
-    document.getElementById("hud");
-
-const message =
-    document.getElementById("message");
-
-
-/*
-----------------------------------------------------------
-Canvas
-----------------------------------------------------------
-*/
-
-function resizeCanvas() {
-
-    canvas.width =
-        window.innerWidth *
-        window.devicePixelRatio;
-
-    canvas.height =
-        window.innerHeight *
-        window.devicePixelRatio;
-
-    ctx.setTransform(
-        window.devicePixelRatio,
-        0,
-        0,
-        window.devicePixelRatio,
-        0,
-        0
-    );
-}
-
-window.addEventListener(
-    "resize",
-    resizeCanvas
+const camera=new THREE.PerspectiveCamera(
+  62,
+  innerWidth/innerHeight,
+  .01,
+  100
 );
 
-resizeCanvas();
+const renderer=new THREE.WebGLRenderer({
+  canvas:document.getElementById("c"),
+  antialias:true,
+  alpha:true
+});
+
+renderer.setPixelRatio(
+  Math.min(devicePixelRatio,2)
+);
+
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
+
+renderer.xr.enabled=true;
+
+renderer.outputColorSpace=
+THREE.SRGBColorSpace;
 
 
-/*
-----------------------------------------------------------
-F1 cars
-----------------------------------------------------------
-*/
+/* =====================================================
+   LICHT
+===================================================== */
 
-const cars = [
+scene.add(
+  new THREE.HemisphereLight(
+    0xffffff,
+    0x202020,
+    3
+  )
+);
 
-    {
-        position: 0,
-        speed: .00055,
-        color: "#e10600",
-        number: "1"
-    },
+const light=
+new THREE.DirectionalLight(
+  0xffffff,
+  3
+);
 
-    {
-        position: .18,
-        speed: .00050,
-        color: "#00aaff",
-        number: "2"
-    },
+light.position.set(
+  4,
+  8,
+  5
+);
 
-    {
-        position: .36,
-        speed: .00048,
-        color: "#ffff00",
-        number: "3"
-    },
+scene.add(light);
 
-    {
-        position: .55,
-        speed: .00046,
-        color: "#00ff66",
-        number: "4"
-    },
 
-    {
-        position: .73,
-        speed: .00044,
-        color: "#ffffff",
-        number: "5"
-    },
+/* =====================================================
+   WERELD
+===================================================== */
 
-    {
-        position: .88,
-        speed: .00042,
-        color: "#ff8800",
-        number: "6"
+const world=
+new THREE.Group();
+
+let worldHeight=.78;
+
+world.position.set(
+  0,
+  worldHeight,
+  -3.25
+);
+
+world.scale.setScalar(.48);
+
+scene.add(world);
+
+
+/* =====================================================
+   TRACK GROUP
+===================================================== */
+
+const trackWorld=
+new THREE.Group();
+
+trackWorld.scale.setScalar(.55);
+
+world.add(trackWorld);
+
+
+/* =====================================================
+   BAAN BASIS
+===================================================== */
+
+const base=
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    4.25,
+    .15,
+    2.35
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x111315,
+    roughness:.8
+  })
+);
+
+base.position.y=-.17;
+
+trackWorld.add(base);
+
+
+/* =====================================================
+   GROEN PLATFORM
+===================================================== */
+
+const grass=
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    4.02,
+    .10,
+    2.12
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x203a25,
+    roughness:.9
+  })
+);
+
+grass.position.y=-.08;
+
+trackWorld.add(grass);
+
+
+/* =====================================================
+   RODE RAND
+===================================================== */
+
+const redBase=
+new THREE.Mesh(
+  new THREE.BoxGeometry(
+    4.18,
+    .035,
+    2.28
+  ),
+  new THREE.MeshBasicMaterial({
+    color:0xe10600
+  })
+);
+
+redBase.position.y=-.245;
+
+trackWorld.add(redBase);
+
+
+/* =====================================================
+   CIRCUIT
+===================================================== */
+
+const points=[
+  [-1.65,-.45],
+  [-1.25,-.88],
+  [-.35,-.98],
+  [.65,-.85],
+  [1.45,-.45],
+  [1.62,.10],
+  [1.28,.65],
+  [.45,.78],
+  [-.45,.72],
+  [-1.48,.50],
+  [-1.72,.02]
+].map(
+  p=>new THREE.Vector3(
+    p[0],
+    0,
+    p[1]
+  )
+);
+
+const track=
+new THREE.CatmullRomCurve3(
+  points,
+  true
+);
+
+
+/* =====================================================
+   ASFALT
+===================================================== */
+
+const road=
+new THREE.Mesh(
+  new THREE.TubeGeometry(
+    track,
+    280,
+    .21,
+    16,
+    true
+  ),
+  new THREE.MeshStandardMaterial({
+    color:0x25282b,
+    roughness:.8
+  })
+);
+
+road.position.y=.05;
+
+trackWorld.add(road);
+
+
+/* =====================================================
+   WITTE RAND
+===================================================== */
+
+const line=
+new THREE.Mesh(
+  new THREE.TubeGeometry(
+    track,
+    280,
+    .012,
+    6,
+    true
+  ),
+  new THREE.MeshBasicMaterial({
+    color:0xffffff
+  })
+);
+
+line.position.y=.275;
+
+trackWorld.add(line);
+
+
+/* =====================================================
+   KERBS
+===================================================== */
+
+for(let i=0;i<90;i++){
+
+  const p=
+  track.getPointAt(i/90);
+
+  const tangent=
+  track.getTangentAt(i/90);
+
+  const kerb=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .055,
+      .018,
+      .105
+    ),
+    new THREE.MeshBasicMaterial({
+      color:
+        i%2
+        ? 0xffffff
+        : 0xe10600
+    })
+  );
+
+  kerb.position.set(
+    p.x,
+    .29,
+    p.z
+  );
+
+  kerb.rotation.y=
+  Math.atan2(
+    tangent.x,
+    tangent.z
+  );
+
+  trackWorld.add(kerb);
+}
+
+
+/* =====================================================
+   AUTO'S
+===================================================== */
+
+const carColors=[
+  0xe10600,
+  0x1677ff,
+  0xffd400,
+  0x00c878,
+  0xffffff,
+  0xff7a00,
+  0xb05cff,
+  0x55c7ff
+];
+
+const cars=[];
+
+function createCar(color){
+
+  const g=
+  new THREE.Group();
+
+  const material=
+  new THREE.MeshStandardMaterial({
+    color:color,
+    roughness:.35
+  });
+
+  const body=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .13,
+      .05,
+      .34
+    ),
+    material
+  );
+
+  g.add(body);
+
+  const nose=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .045,
+      .03,
+      .18
+    ),
+    material
+  );
+
+  nose.position.z=-.23;
+
+  g.add(nose);
+
+  const frontWing=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .20,
+      .015,
+      .04
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x080808
+    })
+  );
+
+  frontWing.position.z=-.30;
+
+  g.add(frontWing);
+
+  const rearWing=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .19,
+      .025,
+      .04
+    ),
+    new THREE.MeshStandardMaterial({
+      color:0x080808
+    })
+  );
+
+  rearWing.position.z=.17;
+
+  g.add(rearWing);
+
+  return g;
+}
+
+for(let i=0;i<8;i++){
+
+  const car=
+  createCar(
+    carColors[i]
+  );
+
+  trackWorld.add(car);
+
+  cars.push({
+    mesh:car,
+    t:i/8,
+    speed:.00072-i*.000014
+  });
+}
+
+
+/* =====================================================
+   AUTO ANIMATIE
+===================================================== */
+
+function updateCars(){
+
+  cars.forEach(car=>{
+
+    car.t+=car.speed;
+
+    if(car.t>1)
+      car.t-=1;
+
+    const p=
+    track.getPointAt(car.t);
+
+    const tangent=
+    track.getTangentAt(car.t);
+
+    car.mesh.position.set(
+      p.x,
+      .31,
+      p.z
+    );
+
+    car.mesh.rotation.y=
+    Math.atan2(
+      tangent.x,
+      tangent.z
+    );
+
+  });
+}
+
+
+/* =====================================================
+   GENERIEKE TEXTURE
+===================================================== */
+
+function texture(
+  title,
+  rows,
+  accent="#e10600"
+){
+
+  const canvas=
+  document.createElement(
+    "canvas"
+  );
+
+  canvas.width=900;
+  canvas.height=520;
+
+  const ctx=
+  canvas.getContext("2d");
+
+  ctx.fillStyle="#101214";
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    520
+  );
+
+  ctx.fillStyle=
+  "rgba(255,255,255,.025)";
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    90
+  );
+
+  ctx.fillStyle=accent;
+
+  ctx.fillRect(
+    0,
+    0,
+    8,
+    520
+  );
+
+  ctx.fillStyle="#fff";
+
+  ctx.font=
+  "bold 34px Arial";
+
+  ctx.fillText(
+    title,
+    35,
+    55
+  );
+
+  ctx.strokeStyle=
+  "rgba(255,255,255,.14)";
+
+  ctx.lineWidth=1;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    35,
+    78
+  );
+
+  ctx.lineTo(
+    865,
+    78
+  );
+
+  ctx.stroke();
+
+  ctx.font=
+  "22px Arial";
+
+  rows.forEach(
+    (row,i)=>{
+
+      ctx.fillStyle=
+      i===0
+      ? "#ffffff"
+      : "#b9bec3";
+
+      ctx.fillText(
+        row,
+        35,
+        120+i*43
+      );
+
     }
+  );
 
+  const tex=
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  return tex;
+}
+
+
+/* =====================================================
+   PREMIUM F1 TV SCHERM
+===================================================== */
+
+function cleanF1TVTexture(){
+
+  const canvas=
+  document.createElement(
+    "canvas"
+  );
+
+  canvas.width=1400;
+  canvas.height=760;
+
+  const ctx=
+  canvas.getContext("2d");
+
+  const bg=
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    760
+  );
+
+  bg.addColorStop(
+    0,
+    "#08090a"
+  );
+
+  bg.addColorStop(
+    .45,
+    "#030405"
+  );
+
+  bg.addColorStop(
+    1,
+    "#000000"
+  );
+
+  ctx.fillStyle=bg;
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    760
+  );
+
+  const shine=
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    180
+  );
+
+  shine.addColorStop(
+    0,
+    "rgba(255,255,255,.055)"
+  );
+
+  shine.addColorStop(
+    1,
+    "rgba(255,255,255,0)"
+  );
+
+  ctx.fillStyle=shine;
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    180
+  );
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    4
+  );
+
+  ctx.fillStyle=
+  "rgba(255,255,255,.035)";
+
+  ctx.fillRect(
+    0,
+    4,
+    1400,
+    1
+  );
+
+  const vignette=
+  ctx.createRadialGradient(
+    700,
+    380,
+    180,
+    700,
+    380,
+    850
+  );
+
+  vignette.addColorStop(
+    0,
+    "rgba(0,0,0,0)"
+  );
+
+  vignette.addColorStop(
+    1,
+    "rgba(0,0,0,.42)"
+  );
+
+  ctx.fillStyle=vignette;
+
+  ctx.fillRect(
+    0,
+    0,
+    1400,
+    760
+  );
+
+  const tex=
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  return tex;
+}
+
+
+/* =====================================================
+   OPENF1 TIMING
+===================================================== */
+
+let timingCanvas=null;
+let timingTextureObject=null;
+
+const timingState={
+  sessionName:"OPENF1",
+  sessionKey:null,
+  live:false,
+  lap:null,
+  totalLaps:null,
+  drivers:[],
+  updated:null,
+  error:null
+};
+
+function formatGap(value){
+
+  if(
+    value===null ||
+    value===undefined ||
+    value===""
+  )
+    return "LEADER";
+
+  if(typeof value==="string")
+    return value;
+
+  return `+${Number(value).toFixed(3)}`;
+}
+
+function timingTexture(){
+
+  timingCanvas=
+  document.createElement(
+    "canvas"
+  );
+
+  timingCanvas.width=900;
+  timingCanvas.height=900;
+
+  const tex=
+  new THREE.CanvasTexture(
+    timingCanvas
+  );
+
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  timingTextureObject=tex;
+
+  drawTimingTexture();
+
+  return tex;
+}
+
+function drawTimingTexture(){
+
+  if(!timingCanvas)
+    return;
+
+  const ctx=
+  timingCanvas.getContext("2d");
+
+  const w=timingCanvas.width;
+  const h=timingCanvas.height;
+
+  ctx.clearRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  const bg=
+  ctx.createLinearGradient(
+    0,
+    0,
+    0,
+    h
+  );
+
+  bg.addColorStop(
+    0,
+    "#111417"
+  );
+
+  bg.addColorStop(
+    .45,
+    "#07090b"
+  );
+
+  bg.addColorStop(
+    1,
+    "#010202"
+  );
+
+  ctx.fillStyle=bg;
+
+  ctx.fillRect(
+    0,
+    0,
+    w,
+    h
+  );
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    0,
+    0,
+    w,
+    10
+  );
+
+  ctx.fillStyle="#fff";
+
+  ctx.font=
+  "800 42px Arial";
+
+  ctx.fillText(
+    "LIVE TIMING",
+    42,
+    66
+  );
+
+  ctx.fillStyle="#8d949b";
+
+  ctx.font=
+  "18px Arial";
+
+  ctx.fillText(
+    timingState.sessionName ||
+    "OPENF1",
+    44,
+    94
+  );
+
+  ctx.fillStyle="#60666c";
+
+  ctx.font=
+  "16px Arial";
+
+  const liveText=
+  timingState.live
+  ? "LIVE DATA"
+  : "HISTORICAL DATA / TEST";
+
+  ctx.fillText(
+    liveText,
+    610,
+    68
+  );
+
+  ctx.fillStyle="#22272b";
+
+  ctx.fillRect(
+    35,
+    122,
+    w-70,
+    2
+  );
+
+  ctx.fillStyle="#737a80";
+
+  ctx.font=
+  "bold 16px Arial";
+
+  ctx.fillText(
+    "POS",
+    42,
+    151
+  );
+
+  ctx.fillText(
+    "DRIVER",
+    112,
+    151
+  );
+
+  ctx.fillText(
+    "GAP",
+    360,
+    151
+  );
+
+  ctx.fillText(
+    "TEAM",
+    585,
+    151
+  );
+
+  const rows=
+  timingState.drivers.slice(
+    0,
+    10
+  );
+
+  rows.forEach(
+    (d,i)=>{
+
+      const y=
+      194+i*57;
+
+      if(i===0){
+
+        ctx.fillStyle=
+        "rgba(225,6,0,.13)";
+
+        ctx.fillRect(
+          30,
+          y-31,
+          w-60,
+          45
+        );
+      }
+
+      ctx.fillStyle=
+      i===0
+      ? "#fff"
+      : "#c5c9cc";
+
+      ctx.font=
+      "800 20px Arial";
+
+      ctx.fillText(
+        String(
+          d.position ??
+          i+1
+        ),
+        42,
+        y
+      );
+
+      ctx.fillStyle="#fff";
+
+      ctx.fillText(
+        d.acronym ||
+        "---",
+        112,
+        y
+      );
+
+      ctx.fillStyle="#c5c9cc";
+
+      ctx.font=
+      "18px Arial";
+
+      ctx.fillText(
+        formatGap(d.gap),
+        360,
+        y
+      );
+
+      ctx.fillStyle="#777e84";
+
+      ctx.font=
+      "15px Arial";
+
+      ctx.fillText(
+        (d.team||"").slice(
+          0,
+          18
+        ),
+        585,
+        y
+      );
+
+    }
+  );
+
+  if(!rows.length){
+
+    ctx.fillStyle="#777e84";
+
+    ctx.font=
+    "20px Arial";
+
+    ctx.fillText(
+      timingState.error ||
+      "Waiting for OpenF1 data...",
+      42,
+      215
+    );
+  }
+
+  ctx.fillStyle="#252a2e";
+
+  ctx.fillRect(
+    35,
+    760,
+    w-70,
+    2
+  );
+
+  ctx.fillStyle="#8d949b";
+
+  ctx.font=
+  "16px Arial";
+
+  ctx.fillText(
+    `LAP ${timingState.lap ?? "--"} / ${timingState.totalLaps ?? "--"}`,
+    42,
+    800
+  );
+
+  ctx.fillText(
+    `SESSION ${timingState.sessionKey ?? "--"}`,
+    270,
+    800
+  );
+
+  ctx.fillText(
+    timingState.updated
+    ? `UPDATED ${timingState.updated}`
+    : "WAITING",
+    600,
+    800
+  );
+
+  if(timingTextureObject)
+    timingTextureObject.needsUpdate=true;
+}
+
+
+/* =====================================================
+   MULTIVIEW TEXTURE
+===================================================== */
+
+function multiTexture(){
+
+  const canvas=
+  document.createElement(
+    "canvas"
+  );
+
+  canvas.width=900;
+  canvas.height=900;
+
+  const ctx=
+  canvas.getContext("2d");
+
+  ctx.fillStyle="#08090a";
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    900
+  );
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    0,
+    0,
+    900,
+    10
+  );
+
+  ctx.fillStyle="#fff";
+
+  ctx.font=
+  "800 40px Arial";
+
+  ctx.fillText(
+    "MULTIVIEW",
+    40,
+    70
+  );
+
+  ctx.fillStyle="#8d949b";
+
+  ctx.font=
+  "18px Arial";
+
+  ctx.fillText(
+    "F1 TV",
+    42,
+    100
+  );
+
+  const views=[
+    "MAIN FEED",
+    "ONBOARD",
+    "TRACK CAM",
+    "DRIVER CAM"
+  ];
+
+  views.forEach(
+    (name,i)=>{
+
+      const x=
+      i%2===0
+      ? 40
+      : 460;
+
+      const y=
+      150+
+      Math.floor(i/2)*210;
+
+      ctx.fillStyle=
+      i===0
+      ? "#e10600"
+      : "#25282c";
+
+      ctx.fillRect(
+        x,
+        y,
+        400,
+        175
+      );
+
+      ctx.strokeStyle=
+      "rgba(255,255,255,.14)";
+
+      ctx.strokeRect(
+        x,
+        y,
+        400,
+        175
+      );
+
+      ctx.fillStyle="#fff";
+
+      ctx.font=
+      "bold 22px Arial";
+
+      ctx.fillText(
+        name,
+        x+20,
+        y+40
+      );
+
+      ctx.fillStyle="#70777d";
+
+      ctx.font=
+      "15px Arial";
+
+      ctx.fillText(
+        "OPEN IN F1 TV",
+        x+20,
+        y+72
+      );
+
+    }
+  );
+
+  ctx.fillStyle="#60666c";
+
+  ctx.font=
+  "16px Arial";
+
+  ctx.fillText(
+    "F1 TV MULTIVIEW",
+    40,
+    650
+  );
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    40,
+    680,
+    820,
+    2
+  );
+
+  ctx.fillStyle="#8d949b";
+
+  ctx.font=
+  "16px Arial";
+
+  ctx.fillText(
+    "Use F1 TV in the browser for the actual protected video feed.",
+    40,
+    720
+  );
+
+  const tex=
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  return tex;
+}
+
+
+/* =====================================================
+   PANELEN
+===================================================== */
+
+let f1TVMode=false;
+
+const panelObjects=[];
+const interactiveObjects=[];
+
+function panel(
+  title,
+  rows,
+  width,
+  height,
+  position,
+  rotation=0,
+  accent="#e10600"
+){
+
+  const group=
+  new THREE.Group();
+
+  group.position.set(
+    ...position
+  );
+
+  group.rotation.y=
+  rotation;
+
+  const frame=
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      width+.045,
+      height+.045
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0x3b3f43,
+      transparent:true,
+      opacity:.92
+    })
+  );
+
+  group.add(frame);
+
+  let map;
+
+  if(title==="F1 TV")
+    map=cleanF1TVTexture();
+  else if(title==="LIVE TIMING")
+    map=timingTexture();
+  else if(title==="MULTIVIEW")
+    map=multiTexture();
+  else
+    map=texture(
+      title,
+      rows,
+      accent
+    );
+
+  const screen=
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      width,
+      height
+    ),
+    new THREE.MeshBasicMaterial({
+      map:map
+    })
+  );
+
+  screen.position.z=-.03;
+
+  group.add(screen);
+
+  group.userData.screen=screen;
+
+  world.add(group);
+
+  panelObjects.push(group);
+
+  return group;
+}
+
+
+/* =====================================================
+   MAIN PANELS
+===================================================== */
+
+const mainPanel=
+panel(
+  "F1 TV",
+  [],
+  3.65,
+  1.90,
+  [0,1.45,-1.05]
+);
+
+const timingPanel=
+panel(
+  "LIVE TIMING",
+  [],
+  1.20,
+  1.25,
+  [2.60,1.45,-.80],
+  -.10
+);
+
+const multiPanel=
+panel(
+  "MULTIVIEW",
+  [],
+  1.20,
+  1.08,
+  [2.60,.10,-.80],
+  -.08
+);
+
+
+/* =====================================================
+   PANEL FRAMES
+===================================================== */
+
+function makePanelFrame(
+  group,
+  width,
+  height
+){
+
+  const frame=
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      width+.055,
+      height+.055
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0x16191c,
+      transparent:true,
+      opacity:.9,
+      depthTest:false
+    })
+  );
+
+  frame.position.z=.025;
+
+  group.add(frame);
+
+  group.userData.frame=
+  frame;
+}
+
+makePanelFrame(
+  mainPanel,
+  3.65,
+  1.90
+);
+
+makePanelFrame(
+  timingPanel,
+  1.20,
+  1.25
+);
+
+makePanelFrame(
+  multiPanel,
+  1.20,
+  1.08
+);
+
+
+/* =====================================================
+   INTERACTIEVE VR BUTTONS
+===================================================== */
+
+function vrButton(
+  icon,
+  label,
+  position,
+  action
+){
+
+  const group=
+  new THREE.Group();
+
+  group.position.set(
+    ...position
+  );
+
+  const plate=
+  new THREE.Mesh(
+    new THREE.BoxGeometry(
+      .42,
+      .11,
+      .025
+    ),
+    new THREE.MeshBasicMaterial({
+      color:0x151719,
+      transparent:true,
+      opacity:.94
+    })
+  );
+
+  group.add(plate);
+
+  const canvas=
+  document.createElement(
+    "canvas"
+  );
+
+  canvas.width=600;
+  canvas.height=180;
+
+  const ctx=
+  canvas.getContext("2d");
+
+  ctx.fillStyle="#151719";
+
+  ctx.fillRect(
+    0,
+    0,
+    600,
+    180
+  );
+
+  ctx.fillStyle="#e10600";
+
+  ctx.fillRect(
+    0,
+    0,
+    8,
+    180
+  );
+
+  ctx.fillStyle="#fff";
+
+  ctx.font=
+  "bold 32px Arial";
+
+  ctx.fillText(
+    icon+"  "+label,
+    28,
+    112
+  );
+
+  const tex=
+  new THREE.CanvasTexture(
+    canvas
+  );
+
+  tex.colorSpace=
+  THREE.SRGBColorSpace;
+
+  const text=
+  new THREE.Mesh(
+    new THREE.PlaneGeometry(
+      .40,
+      .10
+    ),
+    new THREE.MeshBasicMaterial({
+      map:tex,
+      transparent:true
+    })
+  );
+
+  text.position.z=-.02;
+
+  group.add(text);
+
+  group.userData.action=
+  action;
+
+  group.userData.plate=
+  plate;
+
+  world.add(group);
+
+  interactiveObjects.push(
+    plate
+  );
+
+  plate.userData.parentButton=
+  group;
+
+  return group;
+}
+
+
+const f1Button=
+vrButton(
+  "●",
+  "F1 TV",
+  [-2.15,1.00,-.55],
+  "tv"
+);
+
+const multiButton=
+vrButton(
+  "◉",
+  "MULTIVIEW",
+  [-2.15,.64,-.55],
+  "multi"
+);
+
+const timingButton=
+vrButton(
+  "◉",
+  "TIMING",
+  [-2.15,.28,-.55],
+  "timing"
+);
+
+const closeButton=
+vrButton(
+  "×",
+  "CLOSE F1",
+  [-2.15,-.08,-.55],
+  "close"
+);
+
+
+/* =====================================================
+   RAYCASTER
+===================================================== */
+
+const raycaster=
+new THREE.Raycaster();
+
+const tempMatrix=
+new THREE.Matrix4();
+
+
+/* =====================================================
+   CONTROLLER RAY
+===================================================== */
+
+function setupController(index){
+
+  const controller=
+  renderer.xr.getController(index);
+
+  scene.add(controller);
+
+
+  /* ---------------------------------------------
+     RODE POINTER LINE
+  --------------------------------------------- */
+
+  const lineGeometry=
+  new THREE.BufferGeometry()
+  .setFromPoints([
+
+    new THREE.Vector3(
+      0,
+      0,
+      0
+    ),
+
+    new THREE.Vector3(
+      0,
+      0,
+      -3
+    )
+
+  ]);
+
+  const lineMaterial=
+  new THREE.LineBasicMaterial({
+
+    color:0xff180f,
+
+    transparent:true,
+
+    opacity:1,
+
+    depthTest:false,
+
+    depthWrite:false
+  });
+
+  const line=
+  new THREE.Line(
+    lineGeometry,
+    lineMaterial
+  );
+
+  line.renderOrder=9999;
+
+  line.frustumCulled=false;
+
+  controller.add(line);
+
+
+  /* ---------------------------------------------
+     RODE TIP
+  --------------------------------------------- */
+
+  const tip=
+  new THREE.Mesh(
+
+    new THREE.SphereGeometry(
+      .018,
+      12,
+      12
+    ),
+
+    new THREE.MeshBasicMaterial({
+
+      color:0xff180f,
+
+      transparent:true,
+
+      opacity:1,
+
+      depthTest:false,
+
+      depthWrite:false
+    })
+
+  );
+
+  tip.position.set(
+    0,
+    0,
+    -3
+  );
+
+  tip.renderOrder=10000;
+
+  controller.add(tip);
+
+
+  /* ---------------------------------------------
+     EXTRA GLOW
+  --------------------------------------------- */
+
+  const glow=
+  new THREE.Mesh(
+
+    new THREE.SphereGeometry(
+      .032,
+      12,
+      12
+    ),
+
+    new THREE.MeshBasicMaterial({
+
+      color:0xff180f,
+
+      transparent:true,
+
+      opacity:.18,
+
+      depthTest:false,
+
+      depthWrite:false
+    })
+
+  );
+
+  glow.position.set(
+    0,
+    0,
+    -3
+  );
+
+  glow.renderOrder=9998;
+
+  controller.add(glow);
+
+
+  controller.userData.rayLine=
+  line;
+
+  controller.userData.rayTip=
+  tip;
+
+  controller.userData.rayGlow=
+  glow;
+
+
+  controller.addEventListener(
+    "selectstart",
+    ()=>{
+      selectController(
+        controller
+      );
+    }
+  );
+
+
+  return controller;
+}
+
+
+const controllers=[
+  setupController(0),
+  setupController(1)
 ];
 
 
-/*
-----------------------------------------------------------
-Track
-----------------------------------------------------------
-*/
+/* =====================================================
+   RAYCAST
+===================================================== */
 
-function drawTrack() {
+function getControllerHits(
+  controller
+){
 
-    const w =
-        window.innerWidth;
+  tempMatrix.identity();
 
-    const h =
-        window.innerHeight;
+  tempMatrix.extractRotation(
+    controller.matrixWorld
+  );
 
-    const cx =
-        w / 2;
+  raycaster.ray.origin
+  .setFromMatrixPosition(
+    controller.matrixWorld
+  );
 
-    const cy =
-        h / 2 + 30;
+  raycaster.ray.direction
+  .set(
+    0,
+    0,
+    -1
+  )
+  .applyMatrix4(
+    tempMatrix
+  );
 
-    const scale =
-        Math.min(w,h) / 900;
+  return raycaster.intersectObjects(
+    interactiveObjects,
+    false
+  );
+}
 
 
-    ctx.save();
+/* =====================================================
+   CONTROLLER HIGHLIGHT
+===================================================== */
 
-    ctx.translate(cx,cy);
+function highlightController(
+  controller
+){
 
-    ctx.scale(scale,scale);
+  const hits=
+  getControllerHits(
+    controller
+  );
+
+  const hit=
+  hits.length
+  ? hits[0].object
+  : null;
+
+  const buttons=
+  [
+    f1Button,
+    multiButton,
+    timingButton,
+    closeButton
+  ];
+
+  buttons.forEach(
+    button=>{
+
+      const plate=
+      button.userData.plate;
+
+      if(
+        hit &&
+        hit===plate
+      ){
+
+        plate.material.color.set(
+          0xe10600
+        );
+
+      }else{
+
+        plate.material.color.set(
+          0x151719
+        );
+
+      }
+
+    }
+  );
+}
 
 
-    /*
-    Shadow
-    */
+/* =====================================================
+   BUTTON SELECT
+===================================================== */
 
-    ctx.beginPath();
+function selectController(
+  controller
+){
 
-    ctx.ellipse(
-        0,
-        40,
-        360,
-        230,
-        0,
-        0,
-        Math.PI * 2
+  const hits=
+  getControllerHits(
+    controller
+  );
+
+  if(!hits.length)
+    return;
+
+  const object=
+  hits[0].object;
+
+  const button=
+  object.userData.parentButton;
+
+  if(!button)
+    return;
+
+  const action=
+  button.userData.action;
+
+  if(action==="tv")
+    openF1TV();
+
+  if(action==="multi")
+    openMultiView();
+
+  if(action==="timing")
+    toggleTiming();
+
+  if(action==="close")
+    closeF1Windows();
+}
+
+
+/* =====================================================
+   F1 TV WINDOWS
+===================================================== */
+
+let f1TVWindow=null;
+let multiViewWindow=null;
+
+function openF1TV(){
+
+  f1TVMode=true;
+
+  setF1TVMode(true);
+
+  f1TVWindow=
+  window.open(
+    "https://f1tv.formula1.com/",
+    "F1TV_Main"
+  );
+
+  if(
+    f1TVWindow &&
+    !f1TVWindow.closed
+  ){
+
+    try{
+      f1TVWindow.focus();
+    }catch(e){}
+
+  }else{
+
+    setF1TVMode(false);
+
+  }
+}
+
+
+function openMultiView(){
+
+  f1TVMode=true;
+
+  setF1TVMode(true);
+
+  multiViewWindow=
+  window.open(
+    "https://f1tv.formula1.com/",
+    "F1TV_Multiview"
+  );
+
+  if(
+    multiViewWindow &&
+    !multiViewWindow.closed
+  ){
+
+    try{
+      multiViewWindow.focus();
+    }catch(e){}
+
+  }else{
+
+    setF1TVMode(false);
+
+  }
+}
+
+
+function closeF1Windows(){
+
+  try{
+
+    if(
+      f1TVWindow &&
+      !f1TVWindow.closed
+    )
+      f1TVWindow.close();
+
+  }catch(e){}
+
+  try{
+
+    if(
+      multiViewWindow &&
+      !multiViewWindow.closed
+    )
+      multiViewWindow.close();
+
+  }catch(e){}
+
+  f1TVWindow=null;
+  multiViewWindow=null;
+
+  setF1TVMode(false);
+}
+
+
+/* =====================================================
+   F1 TV ACTIVE FRAME
+===================================================== */
+
+function setF1TVMode(active){
+
+  f1TVMode=active;
+
+  if(
+    mainPanel.userData.frame
+  ){
+
+    mainPanel.userData.frame.material.color.set(
+      active
+      ? 0xe10600
+      : 0x16191c
     );
 
-    ctx.fillStyle =
-        "rgba(0,0,0,.5)";
+  }
 
-    ctx.fill();
+  if(
+    f1Button.userData.plate
+  ){
 
-
-    /*
-    Grass
-    */
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        0,
-        0,
-        350,
-        220,
-        0,
-        0,
-        Math.PI * 2
+    f1Button.userData.plate.material.color.set(
+      active
+      ? 0xe10600
+      : 0x151719
     );
 
-    ctx.fillStyle =
-        "#163d1c";
-
-    ctx.fill();
+  }
+}
 
 
-    /*
-    Outer track
-    */
+/* =====================================================
+   TIMING VISIBILITY
+===================================================== */
 
-    ctx.beginPath();
+let timingVisible=true;
 
-    ctx.moveTo(-280,-80);
+function toggleTiming(){
 
-    ctx.bezierCurveTo(
-        -250,-250,
-        20,-280,
-        220,-180
+  timingVisible=
+  !timingVisible;
+
+  timingPanel.visible=
+  timingVisible;
+}
+
+
+/* =====================================================
+   BUTTON HIGHLIGHT
+===================================================== */
+
+function updateButtonState(){
+
+  const buttons=[
+    f1Button,
+    multiButton,
+    timingButton,
+    closeButton
+  ];
+
+  buttons.forEach(
+    button=>{
+
+      if(
+        !button.userData.plate
+      )
+        return;
+
+      if(
+        button.userData.action==="tv" &&
+        f1TVMode
+      ){
+
+        button.userData.plate.material.color.set(
+          0xe10600
+        );
+
+      }
+
+    }
+  );
+}
+
+
+/* =====================================================
+   OPENF1 DATA ENGINE
+===================================================== */
+
+const OPENF1_BASE=
+"https://api.openf1.org/v1";
+
+let openF1Timer=null;
+
+let openF1Session=null;
+
+let openF1Busy=false;
+
+
+async function openF1JSON(path){
+
+  const response=
+  await fetch(
+    OPENF1_BASE+path,
+    {
+      cache:"no-store"
+    }
+  );
+
+  if(!response.ok){
+
+    throw new Error(
+      `OpenF1 HTTP ${response.status}`
     );
 
-    ctx.bezierCurveTo(
-        380,-100,
-        350,130,
-        160,200
+  }
+
+  return response.json();
+}
+
+
+/* =====================================================
+   BEST SESSION
+===================================================== */
+
+async function findBestSession(){
+
+  /*
+    First attempt:
+    current/latest session.
+
+    This is the route that can use
+    live OpenF1 access.
+  */
+
+  try{
+
+    const latest=
+    await openF1JSON(
+      "/sessions?session_key=latest"
     );
 
-    ctx.bezierCurveTo(
-        -40,270,
-        -300,190,
-        -290,30
+    if(
+      Array.isArray(latest) &&
+      latest.length
+    ){
+
+      return latest[
+        latest.length-1
+      ];
+
+    }
+
+  }catch(e){
+
+    console.warn(
+      "OpenF1 latest session unavailable",
+      e
     );
 
-    ctx.bezierCurveTo(
-        -285,-30,
-        -220,-45,
-        -160,-20
+  }
+
+
+  /*
+    Free fallback:
+    latest completed 2026 session.
+  */
+
+  const sessions=
+  await openF1JSON(
+    "/sessions?year=2026"
+  );
+
+  const now=Date.now();
+
+  const completed=
+  (sessions||[])
+  .filter(
+    s=>
+      s.date_end &&
+      new Date(
+        s.date_end
+      ).getTime()<now
+  )
+  .sort(
+    (a,b)=>
+      new Date(b.date_end)-
+      new Date(a.date_end)
+  );
+
+  return(
+    completed[0] ||
+    sessions[sessions.length-1] ||
+    null
+  );
+}
+
+
+/* =====================================================
+   LOAD SESSION
+===================================================== */
+
+async function loadOpenF1Session(){
+
+  const session=
+  await findBestSession();
+
+  if(!session){
+
+    throw new Error(
+      "Geen OpenF1-sessie gevonden"
     );
 
-    ctx.bezierCurveTo(
-        -80,15,
-        -10,60,
-        60,25
-    );
+  }
 
-    ctx.bezierCurveTo(
-        130,-10,
-        145,-80,
-        85,-115
-    );
+  openF1Session=session;
 
-    ctx.bezierCurveTo(
-        0,-165,
-        -100,-145,
-        -140,-70
-    );
+  timingState.sessionKey=
+  session.session_key;
 
-    ctx.lineWidth = 52;
+  timingState.sessionName=
+    `${session.country_name || "F1"} · ${session.session_name || "SESSION"}`;
 
-    ctx.lineCap =
-        "round";
-
-    ctx.strokeStyle =
-        "#333";
-
-    ctx.stroke();
+  return session;
+}
 
 
-    /*
-    Track surface
-    */
+/* =====================================================
+   REFRESH OPENF1
+===================================================== */
 
-    ctx.beginPath();
+async function refreshOpenF1(){
 
-    ctx.moveTo(-280,-80);
+  if(openF1Busy)
+    return;
 
-    ctx.bezierCurveTo(
-        -250,-250,
-        20,-280,
-        220,-180
-    );
+  openF1Busy=true;
 
-    ctx.bezierCurveTo(
-        380,-100,
-        350,130,
-        160,200
-    );
+  try{
 
-    ctx.bezierCurveTo(
-        -40,270,
-        -300,190,
-        -290,30
-    );
+    if(!openF1Session)
+      await loadOpenF1Session();
 
-    ctx.bezierCurveTo(
-        -285,-30,
-        -220,-45,
-        -160,-20
-    );
-
-    ctx.bezierCurveTo(
-        -80,15,
-        -10,60,
-        60,25
-    );
-
-    ctx.bezierCurveTo(
-        130,-10,
-        145,-80,
-        85,-115
-    );
-
-    ctx.bezierCurveTo(
-        0,-165,
-        -100,-145,
-        -140,-70
-    );
-
-    ctx.lineWidth = 38;
-
-    ctx.strokeStyle =
-        "#171717";
-
-    ctx.stroke();
+    const key=
+    openF1Session.session_key;
 
 
-    /*
-    Kerbs
-    */
+    const [
+      drivers,
+      positions,
+      intervals,
+      laps
+    ]=
+    await Promise.all([
 
-    ctx.lineWidth = 5;
+      openF1JSON(
+        `/drivers?session_key=${key}`
+      ),
 
-    ctx.setLineDash([
-        8,
-        8
+      openF1JSON(
+        `/position?session_key=${key}`
+      ),
+
+      openF1JSON(
+        `/intervals?session_key=${key}`
+      ),
+
+      openF1JSON(
+        `/laps?session_key=${key}`
+      )
+
     ]);
 
-    ctx.strokeStyle =
-        "#ffffff";
 
-    ctx.stroke();
+    /* ---------------------------------------------
+       nieuwste item per coureur
+    --------------------------------------------- */
 
+    const latestBy=
+    (
+      items,
+      keyName
+    )=>{
 
-    ctx.setLineDash([]);
+      const map=
+      new Map();
 
+      (items||[]).forEach(
+        item=>{
 
-    /*
-    Start finish
-    */
+          const k=
+          item[keyName];
 
-    ctx.fillStyle =
-        "#ffffff";
+          if(k==null)
+            return;
 
-    ctx.fillRect(
-        -190,
-        -100,
-        6,
-        55
-    );
+          const old=
+          map.get(k);
 
+          if(
+            !old ||
+            new Date(item.date)>
+            new Date(old.date)
+          ){
 
-    ctx.restore();
+            map.set(
+              k,
+              item
+            );
 
-}
-
-
-/*
-----------------------------------------------------------
-Car position
-----------------------------------------------------------
-*/
-
-function getTrackPosition(t) {
-
-    const angle =
-        t * Math.PI * 2;
-
-
-    const x =
-        Math.sin(angle) *
-        240;
-
-
-    const y =
-        Math.cos(angle) *
-        130;
-
-
-    return {
-        x,
-        y
-    };
-
-}
-
-
-/*
-----------------------------------------------------------
-Draw car
-----------------------------------------------------------
-*/
-
-function drawCar(car) {
-
-    const w =
-        window.innerWidth;
-
-    const h =
-        window.innerHeight;
-
-    const scale =
-        Math.min(w,h) / 900;
-
-    const cx =
-        w / 2;
-
-    const cy =
-        h / 2 + 30;
-
-
-    const pos =
-        getTrackPosition(
-            car.position
-        );
-
-
-    const x =
-        cx + pos.x * scale;
-
-    const y =
-        cy + pos.y * scale;
-
-
-    ctx.save();
-
-
-    ctx.translate(
-        x,
-        y
-    );
-
-
-    ctx.scale(
-        scale,
-        scale
-    );
-
-
-    /*
-    Shadow
-    */
-
-    ctx.fillStyle =
-        "rgba(0,0,0,.6)";
-
-    ctx.beginPath();
-
-    ctx.ellipse(
-        0,
-        7,
-        16,
-        7,
-        0,
-        0,
-        Math.PI * 2
-    );
-
-    ctx.fill();
-
-
-    /*
-    Car
-    */
-
-    ctx.fillStyle =
-        car.color;
-
-    ctx.fillRect(
-        -13,
-        -5,
-        26,
-        10
-    );
-
-
-    /*
-    Nose
-    */
-
-    ctx.fillRect(
-        10,
-        -2,
-        12,
-        4
-    );
-
-
-    /*
-    Number
-    */
-
-    ctx.fillStyle =
-        "#000";
-
-    ctx.font =
-        "bold 8px Arial";
-
-    ctx.textAlign =
-        "center";
-
-    ctx.fillText(
-        car.number,
-        0,
-        3
-    );
-
-
-    ctx.restore();
-
-}
-
-
-/*
-----------------------------------------------------------
-Animation
-----------------------------------------------------------
-*/
-
-let running = false;
-
-function animate() {
-
-    if (!running) {
-        return;
-    }
-
-
-    ctx.clearRect(
-        0,
-        0,
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    /*
-    Background
-    */
-
-    const gradient =
-        ctx.createLinearGradient(
-            0,
-            0,
-            0,
-            window.innerHeight
-        );
-
-    gradient.addColorStop(
-        0,
-        "#101015"
-    );
-
-    gradient.addColorStop(
-        1,
-        "#020202"
-    );
-
-    ctx.fillStyle =
-        gradient;
-
-    ctx.fillRect(
-        0,
-        0,
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    drawTrack();
-
-
-    /*
-    Move cars
-    */
-
-    cars.forEach(
-        car => {
-
-            car.position +=
-                car.speed;
-
-            if(
-                car.position >= 1
-            ) {
-
-                car.position -= 1;
-
-            }
-
-            drawCar(car);
+          }
 
         }
+      );
+
+      return map;
+    };
+
+
+    const driverMap=
+    new Map(
+      (drivers||[]).map(
+        d=>
+        [
+          d.driver_number,
+          d
+        ]
+      )
     );
+
+
+    const posMap=
+    latestBy(
+      positions,
+      "driver_number"
+    );
+
+
+    const gapMap=
+    latestBy(
+      intervals,
+      "driver_number"
+    );
+
+
+    /* ---------------------------------------------
+       sorteer positie
+    --------------------------------------------- */
+
+    const ordered=
+    [...posMap.entries()]
+    .map(
+      ([number,p])=>({
+
+        number:number,
+
+        position:
+        Number(p.position),
+
+        p:p
+
+      })
+    )
+    .filter(
+      x=>
+      Number.isFinite(
+        x.position
+      )
+    )
+    .sort(
+      (a,b)=>
+      a.position-b.position
+    );
+
+
+    /* ---------------------------------------------
+       timing data
+    --------------------------------------------- */
+
+    timingState.drivers=
+    ordered.map(
+      x=>{
+
+        const d=
+        driverMap.get(
+          x.number
+        ) || {};
+
+        const gap=
+        gapMap.get(
+          x.number
+        );
+
+        return{
+
+          position:
+          x.position,
+
+          acronym:
+          d.name_acronym ||
+          d.broadcast_name ||
+          String(x.number),
+
+          team:
+          d.team_name ||
+          "",
+
+          gap:
+          gap
+          ? (
+              gap.gap_to_leader ??
+              gap.interval ??
+              null
+            )
+          : null
+
+        };
+
+      }
+    );
+
+
+    /* ---------------------------------------------
+       lap
+    --------------------------------------------- */
+
+    const lapNumbers=
+    (laps||[])
+    .map(
+      x=>
+      Number(
+        x.lap_number
+      )
+    )
+    .filter(
+      Number.isFinite
+    );
+
+    timingState.lap=
+    lapNumbers.length
+    ? Math.max(...lapNumbers)
+    : null;
 
 
     /*
-    Title
+      Race sessions do not necessarily expose
+      total laps directly through this endpoint.
     */
 
-    ctx.fillStyle =
-        "#ffffff";
+    timingState.totalLaps=
+    timingState.totalLaps;
 
-    ctx.font =
-        "bold 22px Arial";
 
-    ctx.textAlign =
-        "center";
+    /* ---------------------------------------------
+       live status
+    --------------------------------------------- */
 
-    ctx.fillText(
-        "F1 IMMERSIVE",
-        window.innerWidth / 2,
-        45
+    timingState.live=
+    Boolean(
+      openF1Session.date_end &&
+      new Date(
+        openF1Session.date_end
+      )>Date.now()
     );
 
 
-    requestAnimationFrame(
-        animate
+    timingState.updated=
+    new Date().toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit"
+      }
     );
 
+
+    timingState.error=null;
+
+    drawTimingTexture();
+
+  }catch(error){
+
+    console.warn(
+      "OpenF1 update failed:",
+      error
+    );
+
+    timingState.error=
+    error.message ||
+    "OpenF1 unavailable";
+
+    drawTimingTexture();
+
+  }finally{
+
+    openF1Busy=false;
+
+  }
 }
 
 
-/*
-----------------------------------------------------------
-START BUTTON
-----------------------------------------------------------
-*/
+/* =====================================================
+   START OPENF1
+===================================================== */
 
-startButton.addEventListener(
-    "click",
-    function() {
+function startOpenF1(){
 
-        menu.style.display =
-            "none";
+  refreshOpenF1();
 
-        experience.style.display =
-            "block";
+  clearInterval(
+    openF1Timer
+  );
 
-        hud.style.display =
-            "block";
+  /*
+    OpenF1 gebruikt geen WebSocket
+    voor deze browser flow.
 
-        f1tv.style.display =
-            "block";
+    Daarom pollen we iedere 4 seconden.
+  */
 
-        running = true;
-
-        animate();
-
-    }
-);
-
-
-/*
-----------------------------------------------------------
-F1 TV
-----------------------------------------------------------
-*/
-
-function openF1TV() {
-
-    window.location.href =
-        "https://f1tv.formula1.com/";
-
+  openF1Timer=
+  setInterval(
+    refreshOpenF1,
+    4000
+  );
 }
 
-tvButton.addEventListener(
-    "click",
-    openF1TV
+startOpenF1();
+
+
+/* =====================================================
+   MENU BUTTONS
+===================================================== */
+
+document.getElementById(
+  "tv"
+).onclick=()=>{
+
+  openF1TV();
+
+};
+
+
+document.getElementById(
+  "multi"
+).onclick=()=>{
+
+  openMultiView();
+
+};
+
+
+/* =====================================================
+   WEBXR CHECK
+===================================================== */
+
+async function checkXR(){
+
+  status.textContent=
+  "WebXR controleren...";
+
+  if(!navigator.xr){
+
+    status.textContent=
+    "WebXR niet beschikbaar.";
+
+    return false;
+
+  }
+
+  try{
+
+    const supported=
+    await Promise.race([
+
+      navigator.xr.isSessionSupported(
+        "immersive-ar"
+      ),
+
+      new Promise(
+        (_,reject)=>
+
+        setTimeout(
+          ()=>reject(
+            new Error(
+              "WebXR timeout"
+            )
+          ),
+          5000
+        )
+
+      )
+
+    ]);
+
+
+    status.textContent=
+    supported
+    ? "✓ Quest 3 immersive AR beschikbaar"
+    : "Immersive AR niet beschikbaar.";
+
+    return supported;
+
+  }catch(error){
+
+    console.warn(
+      "WebXR controle:",
+      error
+    );
+
+    status.textContent=
+    "WebXR klaar — probeer Immersive";
+
+    return true;
+
+  }
+}
+
+
+/* =====================================================
+   START IMMERSIVE
+===================================================== */
+
+document.getElementById(
+  "start"
+).onclick=
+
+async()=>{
+
+  status.textContent=
+  "Immersive starten...";
+
+  if(!navigator.xr){
+
+    status.textContent=
+    "Deze browser ondersteunt geen WebXR.";
+
+    return;
+
+  }
+
+  try{
+
+    const session=
+    await navigator.xr.requestSession(
+      "immersive-ar",
+      {
+        requiredFeatures:[],
+        optionalFeatures:[
+          "local-floor",
+          "hand-tracking",
+          "bounded-floor"
+        ]
+      }
+    );
+
+
+    await renderer.xr.setSession(
+      session
+    );
+
+
+    menu.style.display=
+    "none";
+
+
+    session.addEventListener(
+      "end",
+      ()=>{
+
+        menu.style.display=
+        "flex";
+
+        status.textContent=
+        "Immersive sessie beëindigd.";
+
+      }
+    );
+
+
+    renderer.setAnimationLoop(
+      ()=>{
+
+        updateCars();
+
+        controllers.forEach(
+          controller=>{
+
+            highlightController(
+              controller
+            );
+
+          }
+        );
+
+        updateButtonState();
+
+        renderer.render(
+          scene,
+          camera
+        );
+
+      }
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Immersive starten:",
+      error
+    );
+
+    status.textContent=
+    "Immersive starten mislukt.";
+
+  }
+
+};
+
+
+/* =====================================================
+   WINDOW RESIZE
+===================================================== */
+
+window.addEventListener(
+  "resize",
+  ()=>{
+
+    camera.aspect=
+    innerWidth/
+    innerHeight;
+
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+  }
 );
 
-f1tv.addEventListener(
-    "click",
-    openF1TV
-);
 
+/* =====================================================
+   INIT
+===================================================== */
 
-/*
-----------------------------------------------------------
-Page loaded
-----------------------------------------------------------
-*/
-
-message.textContent =
-    "Ready — Quest 3 / iPhone compatible preview";
+checkXR();
 
 </script>
 
